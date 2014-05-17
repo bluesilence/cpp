@@ -1,6 +1,5 @@
 #include <iostream>
 #include <queue>
-#include <functional>
 #include <stdlib.h>
 using namespace std;
 

@@ -2,6 +2,12 @@
 #include <memory.h>
 using namespace std;
 
+/* Switch of test mode
+#ifndef _DEBUG
+#define _DEBUG
+#endif
+*/
+
 // For lower-case only + '\0'
 const unsigned int MAX_WIDTH = 26 + 1;
 const unsigned int MAX_LENGTH = 100;
@@ -15,6 +21,10 @@ struct TrieNode {
     }	
 
     TrieNode(char ch) {
+	#ifdef _DEBUG
+	cout<<"Construct TrieNode of max width: "<<MAX_WIDTH<<endl;
+	#endif
+
 	data = ch;
 	TrieNode();
     }
@@ -22,6 +32,10 @@ struct TrieNode {
     ~TrieNode() {
 	for(int i = 0; i < MAX_WIDTH; i++) {
 	    if(next[i] != NULL) {
+		#ifdef _DEBUG
+		cout<<"Destructing TrieNode: "<<next[i]->data<<endl;
+		#endif
+
 		delete next[i];
 	    }
 	}
@@ -34,15 +48,17 @@ struct TrieNode {
 
 	char ch = *word;
 
-	if('\0' == ch && next[MAX_LENGTH-1] != NULL) { //Match till leaf node
-	    return true;
-	}
+	#ifdef _DEBUG
+	cout<<"ch: "<<ch<<", data: "<<data<<endl;
+	#endif
 
 	bool found = false;
 	for(int i = 0; i < MAX_WIDTH; i++) {
 	    //Already had the node, continue for the next char
 	    if(next[i] != NULL && next[i]->data == ch) {
-		found = next[i]->find(word + 1);
+		if(ch == '\0') //next character is terminal
+		    found = true;
+		else found = next[i]->find(word + 1);
 
 		if(found)
 		    return true;
@@ -58,23 +74,21 @@ struct TrieNode {
 	    return false;
 	}
 
-	if('\0' == *word) { //Insert terminal
-	    next[MAX_LENGTH-1] = new TrieNode('\0');
-	    return true;
-	}
-
 	char ch = *word;
 	int index = ch == '\0' ? (MAX_WIDTH - 1) : (ch - 'a');
-	if(!find(word)) { //The char doesn't exist in next[], create new node
+	if(next[index] == NULL) {
 	    if(index < 0 || index > 26) {
-		cout<<"Invalid index"<<endl;
+		cout<<"Invalid character: "<<ch<<endl;
 		return false;
 	    }
 	    
-	    if(next[index] == NULL) {
-		next[index] = new TrieNode(ch);
-		if(ch == '\0') //Inserted till the end of string
-		    return true;
+	    next[index] = new TrieNode(ch);
+	    if(ch == '\0') { //Inserted till the end of string
+		#ifdef _DEBUG
+		cout<<"Inserted terminal."<<endl;
+		#endif
+
+		return true;
 	    }
 	}
 
@@ -112,17 +126,25 @@ struct TrieNode {
 class TrieTree {
     public:
 	TrieTree() {
+	    #ifdef _DEBUG
+	    cout<<"Construct TrieTree of max length: "<<MAX_LENGTH<<endl;
+	    #endif
+
 	    root = new TrieNode();
 	    memset(printBuff, '\0', sizeof(char) * MAX_LENGTH);
 	}
 
 	~TrieTree() {
+	    #ifdef _DEBUG
 	    cout<<"Deleting root..."<<endl;
+	    #endif
+
 	    delete root;
 	}
 
 	void print() {
 	    cout<<"Print tree..."<<endl;
+
 	    //root node doesn't have data. Start from first children nodes.
 	    for(int i = 0; i < MAX_WIDTH; i++) {
 		if(root->next[i] != NULL) {

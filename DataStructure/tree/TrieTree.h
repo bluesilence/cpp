@@ -2,14 +2,14 @@
 #include <memory.h>
 using namespace std;
 
-/* Switch of test mode
+// Switch of test mode
+/*
 #ifndef _DEBUG
 #define _DEBUG
 #endif
 */
-
-// For lower-case only + '\0'
-const unsigned int MAX_WIDTH = 26 + 1;
+// For all the chars
+const unsigned int MAX_WIDTH = 256;
 const unsigned int MAX_LENGTH = 100;
 
 struct TrieNode {
@@ -53,16 +53,15 @@ struct TrieNode {
 	#endif
 
 	bool found = false;
-	for(int i = 0; i < MAX_WIDTH; i++) {
-	    //Already had the node, continue for the next char
-	    if(next[i] != NULL && next[i]->data == ch) {
-		if(ch == '\0') //next character is terminal
-		    found = true;
-		else found = next[i]->find(word + 1);
+	int index = ch;
+	//Already had the node, continue for the next char
+	if(next[index] != NULL) {
+	    if(ch == '\0') //next character is terminal
+		found = true;
+	    else found = next[index]->find(word + 1);
 
-		if(found)
-		    return true;
-	    }
+	    if(found)
+		return true;
 	}
 
 	return false;
@@ -75,13 +74,8 @@ struct TrieNode {
 	}
 
 	char ch = *word;
-	int index = ch == '\0' ? (MAX_WIDTH - 1) : (ch - 'a');
+	int index = ch;
 	if(next[index] == NULL) {
-	    if(index < 0 || index > 26) {
-		cout<<"Invalid character: "<<ch<<endl;
-		return false;
-	    }
-	    
 	    next[index] = new TrieNode(ch);
 	    if(ch == '\0') { //Inserted till the end of string
 		#ifdef _DEBUG

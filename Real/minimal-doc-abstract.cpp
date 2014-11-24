@@ -20,7 +20,7 @@ public:
 		//	line.toLowerCase()
 		//	int index = -1;
 		//	for(int i = 0, i < words.size(); i++) {
-		//		if(-1 != (index = string.find(line, words[i])) {
+		//		if(-1 != (index = line.find_first_of(words[i])) {
 		//			indices[i] = index + lineIndex;
 		//			int newMin = findMin(indices);
 		//			int newMax = findMax(indices);

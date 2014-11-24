@@ -11,8 +11,8 @@ using namespace std;
 class Solution {
 public:
 	vector<int> minimalAbstract(fstream doc, vector<string> words) {
-		//if(targets.size() < 1)	return "";
-		//vector<int> indices(targets.size(), -1);
+		//if(words.size() < 1)	return "";
+		//vector<int> indices(words.size(), -1);
 		//int lineIndex = 0;
 		//int min = -1, max = -1;
 		//int minDistance = numeric_limits<int>::max();

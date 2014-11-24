@@ -18,10 +18,13 @@ public:
 		//int minDistance = numeric_limits<int>::max();
 		//While doc != end, read line by line from doc {
 		//	line.toLowerCase()
-		//	int index = -1;
-		//	for(int i = 0, i < words.size(); i++) {
-		//		if(-1 != (index = line.find_first_of(words[i])) {
+		//	int index = 0;
+		//	int startIndex = 0;
+		//	while(startIndex < line.length()) {
+		//		for(int i = 0, i < words.size(); i++) {
+		//		if(-1 != (index = line.find_first_of(words[i], startIndex)) {
 		//			indices[i] = index + lineIndex;
+		//			startIndex += index + words[i].length();
 		//			int newMin = findMin(indices);
 		//			int newMax = findMax(indices);
 		//			if( newMin > -1 && newMax > -1 && (newMax - newMin < minDistance) {
@@ -31,6 +34,7 @@ public:
 		//			}
 		//	}
 		//	lineIndex += line.length();
+		//	}
 		//}
 		//vector results;
 		//results.push_back(min);

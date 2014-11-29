@@ -8,6 +8,9 @@
  */
 class Solution {
 public:
+    /**
+     * Best solution: If 2 lists have intersection, their last node must be the same!
+     */
     ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
         if (!headA || !headB)
             return NULL;

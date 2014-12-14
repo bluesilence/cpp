@@ -18,6 +18,7 @@ public:
         }
         
         result = result * pos;
+        
         if (result > numeric_limits<int>::max())
             return numeric_limits<int>::max();
         else if (result < numeric_limits<int>::min())

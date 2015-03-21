@@ -16,7 +16,7 @@ public:
     }
 
 private:
-   vector<int> combination;
+    vector<int> combination;
 
     void findOddCombinationsCore(uint remainder, uint currentOdd)
     {

@@ -11,11 +11,11 @@ public:
     int n = s.size();
       
     //The extra element dp[n] is to set a min boundary 0
-		int* dp = new int[n + 1];
+    int* dp = new int[n + 1];
 		
-		//Each single character is a palindrome
-		for(int i = n; i >= 0; i--)
-			dp[i] = n - i;
+    //Each single character is a palindrome
+    for(int i = n; i >= 0; i--)
+	dp[i] = n - i;
 			
 		bool** isPalindrome = new bool*[n];
 		
@@ -48,6 +48,6 @@ public:
 		
 		delete isPalindrome;
 		
-		return result;
+	return result;
   }
 };

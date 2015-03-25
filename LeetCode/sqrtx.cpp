@@ -11,7 +11,7 @@ public:
         
         while ((end - start) > 1) { //If (end-start) == 1, then mid = start, the loop will be infinite
             mid = (start + end) / 2;
-            if (mid == x/mid)
+            if (mid == x/mid)   //Use devision instead of multiplication is to avoid int overflow
                 return mid;
             else if (mid < x/mid)
                 start = mid;

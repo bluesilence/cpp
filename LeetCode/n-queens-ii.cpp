@@ -4,53 +4,32 @@ public:
         if (n < 1)
             return 0;
         
-        vector<int> oneSolution(n, -1);
+        vector<int> q(n, -1);
         
-        //Initialize each row, queen id starts from 0
-        for (int i = 0; i < n; i++) {
-            oneSolution[i] = i;
-        }
-        
-        int totalCount = 0;
-        
-        permute(oneSolution, n, 0, totalCount);
-        
-        return totalCount;
+        return countQueens(q, n);
     }
     
-private:
-    void permute(vector<int> &oneSolution, int n, int index, int &totalCount) {
-        if (index >= n) {
-            if (isValid(oneSolution, n))
-                totalCount++;
-                
-            return;
-        }
+    int countQueens(vector<int> &q, int n, int index = 0) {
+        if (index == n)
+            return 1;
         
-        for (int i = index; i < n; i++) {
-            swap(oneSolution, i, index);
-            permute(oneSolution, n, index + 1, totalCount);
-            swap(oneSolution, i, index);
-        }
-    }
-    
-    bool isValid(vector<int> &solution, int n) {
+        int sum = 0;
         for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {   //Check diagonal
-                if (j - i == solution[j] - solution[i] || i - j == solution[j] - solution[i])
-                    return false;
+            if (isLegal(q, index, i)) { //Can put a Queen at row index, col i
+                q[index] = i;
+                sum += countQueens(q, n, index+1);
             }
         }
         
-        return true;
+        return sum;
     }
     
-    void swap(vector<int> &solution, int col1, int col2) {
-        if (col2 == col1 || col1 < 0 || col2 < 0 || col1 >= solution.size() || col2 >= solution.size())
-            return;
-            
-        char tmp = solution[col1];
-        solution[col1] = solution[col2];
-        solution[col2] = tmp;
+private:
+    bool isLegal(vector<int> &q, int n, int index) {
+        for (int i = 0; i < n; i++)
+            if (q[i] == index || q[i] - i == index - n || q[i] + i == index + n)
+                return false;
+        
+      return true;
     }
 };

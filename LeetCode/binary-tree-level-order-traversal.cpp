@@ -10,47 +10,42 @@
 class Solution {
 public:
     vector<vector<int> > levelOrder(TreeNode *root) {
-        vector<vector<int>> results;
-        
+        vector<vector<int> > result;
         if (!root)
-            return results;
-            
-        queue<TreeNode*> s1, s2;
-        s1.push(root);
+            return result;
         
-        TreeNode *p = NULL;
-        vector<int> levelResult;
-        while (!s1.empty() || !s2.empty()) {
-            levelResult.clear();
+        queue<TreeNode*> q;
+        q.push(root);
+        
+        //Track the count for each level in the queue
+        int currentLevelCount = 1;
+        int nextLevelCount = 0;
+        vector<int> tmp;
+        
+        while(!q.empty()) {
+            tmp.clear();
+            nextLevelCount = 0;
             
-            //one of s1, s2 must be empty
-            if (!s1.empty()) {
-                while (!s1.empty()) {
-                    p = s1.front();
-                    s1.pop();
-                    levelResult.push_back(p->val);
-                    if (p->left)
-                        s2.push(p->left);
-                    
-                    if (p->right)
-                        s2.push(p->right);
+            for (int i = 0; i < currentLevelCount; i++) {
+                root = q.front();
+                q.pop();
+                
+                tmp.push_back(root->val);
+                if (root->left) {
+                    q.push(root->left);
+                    nextLevelCount++;
                 }
-            } else {
-                while (!s2.empty()) {
-                    p = s2.front();
-                    s2.pop();
-                    levelResult.push_back(p->val);
-                    if (p->left)
-                        s1.push(p->left);
-                    
-                    if (p->right)
-                        s1.push(p->right);
+                
+                if (root->right) {
+                    q.push(root->right);
+                    nextLevelCount++;
                 }
             }
             
-            results.push_back(levelResult);
+            currentLevelCount = nextLevelCount;
+            result.push_back(tmp);
         }
         
-        return results;
+        return result;
     }
 };

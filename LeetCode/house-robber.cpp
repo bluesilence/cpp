@@ -8,8 +8,11 @@ public:
         if (1 == n)
             return num[0];
             
+        //dp_robbed[i]: the max profit when coming to house[i] and house[i] is not robbed
         vector<int> dp_robbed(n, 0);
+        //dp_notRobbed[i]: the max profit when coming to house[i] and house[i] is robbed
         vector<int> dp_notRobbed(n, 0);
+        
         dp_robbed[0] = num[0];
         dp_robbed[1] = num[1];
         dp_notRobbed[1] = dp_robbed[0];

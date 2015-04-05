@@ -1,18 +1,21 @@
 class Solution {
 public:
     int removeDuplicates(int A[], int n) {
-        if (!A || n < 2)
-            return n;
-        
-        int fast = 1, slow = 0;
-        
-        while (fast < n) {
-            if (A[slow] == A[fast])
-                fast++;
-            else
-                A[++slow] = A[fast++];
+        if (n == 0)
+            return 0;
+            
+        int pos = 0;  //Position to copy each distinct number
+        int key = A[0]; //Record each distinct number
+        for(int i = 1; i < n; i++) {
+            if (A[i] != key) {
+                A[pos++] = key;
+                key = A[i];                
+            }
         }
         
-        return slow + 1;
+        //Important: copy last distinct number
+        A[pos++] = key;
+        
+        return pos;
     }
 };

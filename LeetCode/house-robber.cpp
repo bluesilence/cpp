@@ -18,7 +18,7 @@ public:
         dp_notRobbed[1] = dp_robbed[0];
         
         for (int i = 2; i < n; i++) {
-            dp_robbed[i] = max(dp_robbed[i-2], dp_notRobbed[i-1]) + num[i];
+            dp_robbed[i] = dp_notRobbed[i-1] + num[i];
             dp_notRobbed[i] = max(dp_notRobbed[i-1], dp_robbed[i-1]);
         }
         

@@ -14,18 +14,16 @@ public:
             int y = points[i].y;
             int dups = 0;
             
-            for(int j = 0; j < size; j++) {
-                if(i != j) {
-                    int x1 = points[j].x;
-                    int y1 = points[j].y;
-                    if(x == x1 && y == y1) {
-                        dups++;
-                    } else if (x == x1) {   //Vertical line
-                        count[(double)INT_MAX]++;
-                    } else {
-                        double k = (double)(y1-y) / (double)(x1-x); //Note: convert int to double
-                        count[k]++;
-                    }
+            for(int j = i+1; j < size; j++) {
+                int x1 = points[j].x;
+                int y1 = points[j].y;
+                if(x == x1 && y == y1) {
+                    dups++;
+                } else if (x == x1) {   //Vertical line
+                    count[(double)INT_MAX]++;
+                } else {
+                    double k = (double)(y1-y) / (double)(x1-x); //Note: convert int to double
+                    count[k]++;
                 }
             }
             
@@ -33,7 +31,7 @@ public:
                 ans = max(ans, it->second + dups);
             }
             
-            ans = max(ans, dups);   //all the points are the same
+            ans = max(ans, dups);   //Only duplicate points
         }
         
         return ans + 1; //Add the original point that was enumerated in the outer loop

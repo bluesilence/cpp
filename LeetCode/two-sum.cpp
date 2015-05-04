@@ -1,39 +1,32 @@
 class Solution {
 public:
-    vector<int> twoSum(vector<int> &numbers, int target) {
+    vector<int> twoSum(vector<int>& nums, int target) {
         vector<int> results;
-        if (numbers.size() < 2)
+        if (nums.size() < 2)
             return results;
         
-        vector<int> copy(numbers);
-        sort(copy.begin(), copy.end());
+        vector<int> numsCopy = nums;
+        sort(numsCopy.begin(), numsCopy.end());
         
-        int begin = 0, end = copy.size() - 1;
-        while (begin < end) {
-            int sum = copy[begin] + copy[end];
-            if (sum == target) {
-                int originalBegin = find(numbers, copy[begin], 0);
-                int originalEnd = find(numbers, copy[end], originalBegin);
-                results.push_back(originalBegin);
-                results.push_back(originalEnd);
+        int i = 0, j = numsCopy.size() - 1;
+        int tmpSum;
+        while (i < j) {
+            tmpSum = numsCopy[i] + numsCopy[j];
+            if (tmpSum == target)
                 break;
-            } else if (sum < target) {
-                begin++;
-            } else {
-                end--;
+            else if (tmpSum < target)
+                i++;
+            else
+                j--;
+        }
+        
+        if (tmpSum == target) {
+            for (int k = 0; k < nums.size(); k++) {
+                if (nums[k] == numsCopy[i] || nums[k] == numsCopy[j])
+                    results.push_back(k+1);
             }
         }
         
-        sort(results.begin(), results.end());
-        
         return results;
-    }
-    
-private:
-    int find(vector<int> &numbers, int target, int dupIndex) {
-        for (int i = 1; i <= numbers.size(); i++) {
-            if (numbers[i - 1] == target && i != dupIndex)
-                return i;
-        }
     }
 };

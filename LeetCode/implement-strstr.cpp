@@ -1,44 +1,43 @@
 class Solution {
 public:
-    int strStr(char *haystack, char *needle) {
-        if (!needle || *needle == '\0')
+    int strStr(string haystack, string needle) {
+        if (needle.empty())
             return 0;
-            
-        if (!haystack || *haystack == '\0')
+        
+        if (haystack.empty())
             return -1;
         
-        int *next = new int[strlen(needle)];
-        getNext(needle, next);
+        vector<int> next(needle.size(), 0);
+        genNext(needle, next);
         
         int i = 0, j = 0;
-        while (haystack[i] != '\0') {
+        while (i < haystack.size()) {
             while (j >= 0 && needle[j] != haystack[i]) {
                 j = next[j];
             }
             
-            ++i;
-            ++j;
+            i++;
+            j++;
             
-            if (needle[j] == '\0') {
-                delete next;
+            if (j == needle.size()) {   //matched needle
                 return i - j;
             }
         }
         
-        delete next;
         return -1;
     }
 
 private:
-    void getNext(char *needle, int *next) {
+    void genNext(string &needle, vector<int> &next) {
         int i = 0, j = -1;
         next[i] = j;
         
-        while (needle[i + 1] != '\0') {
+        while (i + 1 < needle.size()) {
             while (j >= 0 && needle[j] != needle[i]) {
                 j = next[j];
             }
             
+            //Now needle[i] == needle[j], next character that need to compare is (i+1) and (j+1)
             ++i;
             ++j;
             next[i] = j;

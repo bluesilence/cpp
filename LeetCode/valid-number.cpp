@@ -11,6 +11,7 @@ class Solution {
                 NUM_INPUTS  // 6
            };
        
+           //In this question, the exponent must be in the form of (+-)x.xe(+-)x, the number after e must be integer
            int transitionTable[][NUM_INPUTS] = {
                -1,  0,  3,  1,  2, -1,     // next states for state 0
                -1,  8, -1,  1,  4,  5,     // next states for state 1

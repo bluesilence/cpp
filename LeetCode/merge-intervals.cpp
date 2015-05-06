@@ -7,46 +7,46 @@
  *     Interval(int s, int e) : start(s), end(e) {}
  * };
  */
- bool comp(const Interval &a, const Interval &b) {  
-    if(a.start == b.start)
-        return a.end > b.end;   //a can merge b, so a comes first
-    
-    return a.start < b.start;   //Otherwise, order by start time
- }
+ //This order ensures that intervals which might be overlapped appear one by one
+ bool mergeOrderComp(Interval i1, Interval i2) {
+     return i1.start < i2.start;
+ };
  
 class Solution {
 public:
-    vector<Interval> merge(vector<Interval> &intervals) {
+    vector<Interval> merge(vector<Interval>& intervals) {
+        //Compare current interval with next interval
+        //If the 2 intervals overlap, merge them to form a larger interval
+        //Else, insert current interval, assign next interval as current interval
+        //Scan until all intervals are compared
+        if (intervals.size() < 1)
+            return intervals;
+        
         vector<Interval> results;
         
-        if (intervals.empty())
-            return results;
-            
-        //Important: Sort ensures intervals that are most possible to merge others come first
-        sort(intervals.begin(), intervals.end(), comp);
+        sort(intervals.begin(), intervals.end(), mergeOrderComp);
+        Interval curr = intervals[0];
         
-        Interval tmp = intervals[0];
         for (int i = 1; i < intervals.size(); i++) {
-            if (hasOverlap(tmp, intervals[i])) {    //Get the widest interval by merging tmp and results[i]
-                tmp.start = min(tmp.start, intervals[i].start);
-                tmp.end = max(tmp.end, intervals[i].end);
-            } else {    //Previous interval doesn't overlap with current one, need to push it to result first
-                results.push_back(tmp);
-                tmp = intervals[i];
+            if (hasOverlap(curr, intervals[i])) {
+                curr.start = min(curr.start, intervals[i].start);
+                curr.end = max(curr.end, intervals[i].end);
+            } else {
+                results.push_back(curr);
+                curr = intervals[i];
             }
         }
         
-        //Important: collect last interval
-        results.push_back(tmp);
+        results.push_back(curr);
         
         return results;
     }
 
 private:
-    bool hasOverlap(Interval i1, Interval i2) {
-        return (i1.start <= i2.end && i1.end >= i2.end) 
-                || (i2.start <= i1.end && i2.end >= i1.end) 
-                || (i1.start >= i2.start && i1.end <= i2.end) 
-                || (i2.start >= i1.start && i2.end <= i1.end);
+    bool hasOverlap(const Interval &i1, const Interval &i2) {
+        if (i1.end < i2.start || i2.end < i1.start)
+            return false;
+        
+        return true;
     }
 };

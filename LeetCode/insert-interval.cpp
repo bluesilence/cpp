@@ -7,16 +7,10 @@
  *     Interval(int s, int e) : start(s), end(e) {}
  * };
  */
- bool comp(const Interval &a, const Interval &b) {  
-    if(a.start == b.start)
-        return a.end > b.end;   //a can merge b, so a comes first
-    
-    return a.start < b.start;   //Otherwise, order by start time
- }
- 
 class Solution {
 public:
-    vector<Interval> insert(vector<Interval> &intervals, Interval newInterval) {
+    vector<Interval> insert(vector<Interval>& intervals, Interval newInterval) {
+        //Similar as merge-interval, the difference is to check where to merge newInterval along the way
         vector<Interval> results;
         if (intervals.empty()) {
             results.push_back(newInterval);
@@ -24,58 +18,55 @@ public:
         }
         
         bool inserted = false;
-        Interval tmp;
-        int startingIndex;
-        if (newInterval.start < intervals[0].start) { //Decide which interval as beginning
-            tmp = newInterval;
-            startingIndex = 0;
-            inserted = true;
+        Interval curr;
+        if (intervals[0].start < newInterval.start) {
+            curr = intervals[0];
         } else {
-            tmp = intervals[0];
-            startingIndex = 1;
+            curr = newInterval;
+            inserted = true;
         }
         
-        Interval intermediate;
-        for (int i = startingIndex; i < intervals.size();) {    //Insert newInterval in order
-            if (inserted || intervals[i].start < newInterval.start) {
-                intermediate = intervals[i];
-                i++;
-            } else {
-                intermediate = newInterval;
+        Interval next;
+        int i = inserted ? 0 : 1;   //Where to start in the intervals array
+        while (i < intervals.size()) {
+            if (inserted || intervals[i].start <= newInterval.start) {
+                next = intervals[i++];
+            } else {   //!insertedNewInteval && intervals[i].start > newInterval.start
+                next = newInterval;
                 inserted = true;
             }
             
-            if (hasOverlap(tmp, intermediate)) {
-                tmp.start = min(tmp.start, intermediate.start);
-                tmp.end = max(tmp.end, intermediate.end);
+            if (hasOverlap(curr, next)) {
+                curr.start = min(curr.start, next.start);
+                curr.end = max(curr.end, next.end);
             } else {
-                results.push_back(tmp);
-                tmp = intermediate;
+                results.push_back(curr);
+                curr = next;
             }
         }
-       
-        //Important: collect last interval
+        
+        //The original intervals only has 1 interval
         if (!inserted) {
-            if (hasOverlap(tmp, newInterval)) { //Merge last interval with newInterval
-                tmp.start = min(tmp.start, newInterval.start);
-                tmp.end = max(tmp.end, newInterval.end);
-                results.push_back(tmp);
+            if (hasOverlap(curr, newInterval)) {
+                curr.start = min(curr.start, newInterval.start);
+                curr.end = max(curr.end, newInterval.end);
+                results.push_back(curr);
             } else {
-                results.push_back(tmp);
+                results.push_back(curr);
                 results.push_back(newInterval);
             }
         } else {
-            results.push_back(tmp);
+            results.push_back(curr);
         }
-        
+            
         return results;
     }
 
 private:
     bool hasOverlap(Interval i1, Interval i2) {
-        return (i1.start <= i2.end && i1.end >= i2.end) 
-                || (i2.start <= i1.end && i2.end >= i1.end) 
-                || (i1.start >= i2.start && i1.end <= i2.end) 
-                || (i2.start >= i1.start && i2.end <= i1.end);
+        if (i1.end < i2.start || i2.end < i1.start)
+            return false;
+        
+        return true;
     }
 };

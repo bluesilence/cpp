@@ -1,35 +1,24 @@
 class Solution {
 public:
-    void merge(int A[], int m, int B[], int n) {
-        if (!B || n < 1)
-            return;
-            
-        int indexA = 0, indexB = 0;
-        int *tmp = new int[m + n];
-        int i = 0;
-        for (; i < m + n; i++) {
-            if (indexA >= m || indexB >= n)
-                break;
-                
-            if (A[indexA] < B[indexB]) {
-                tmp[i] = A[indexA++];
+    void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+        //Similar to insertion sort
+        //Fill the final array from large to small, so as to leave spaces to merge numbers
+        int i1 = m - 1;
+        int i2 = n - 1;
+        int i = m + n - 1;
+        
+        while (i1 >= 0 && i2 >= 0) {
+            if (nums1[i1] >= nums2[i2]) {
+                nums1[i--] = nums1[i1--];
             } else {
-                tmp[i] = B[indexB++];
+                nums1[i--] = nums2[i2--];
             }
         }
         
-        while (indexA < m) {
-            tmp[i++] = A[indexA++];
+        //If i1 >= 0, the numbers in nums1 before i1 are already sorted, no action needed
+        //Merge the remainder of nums2
+        while (i2 >= 0) {
+            nums1[i--] = nums2[i2--]; 
         }
-        
-        while (indexB < n) {
-            tmp[i++] = B[indexB++];
-        }
-        
-        for (i = 0; i < m + n; i++) {
-            A[i] = tmp[i];
-        }
-        
-        delete tmp;
     }
 };

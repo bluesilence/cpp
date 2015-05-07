@@ -16,12 +16,15 @@ public:
         if (root->left && !isValidBST(root->left))
             return false;
         
-        if (pre != NULL && root->val <= pre->val)
+        if (pre != NULL && pre->val >= root->val)
             return false;
         
         pre = root;
         
-        return isValidBST(root->right);
+        if (root->right)
+            return isValidBST(root->right);
+        else
+            return true;
     }
 
 private:

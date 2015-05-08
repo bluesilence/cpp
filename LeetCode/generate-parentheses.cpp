@@ -1,28 +1,27 @@
 class Solution {
 public:
     vector<string> generateParenthesis(int n) {
-        //Right parentheses must appear after left parentheses
         vector<string> results;
-        string result = "";
-        generate(n, n, result, results);
+        if (n <= 0)
+            return results;
         
+        generateParenthesisCore(results, "", n, n);
+    
         return results;
     }
 
 private:
-    //leftNum: number of remaining left parenthesis
-    //rightNum: number of remaining right parenthesis
-    void generate(int leftNum, int rightNum, string result, vector<string> &results) {
-        if (leftNum == 0 && rightNum == 0) {
+    void generateParenthesisCore(vector<string> &results, string result, int leftCount, int rightCount) {
+        if (leftCount == 0 && rightCount == 0) {
             results.push_back(result);
-        }
-        
-        if (leftNum > 0) {
-            generate(leftNum - 1, rightNum, result + '(', results);
-        }
-        
-        if (rightNum > 0 && leftNum < rightNum) {
-            generate(leftNum, rightNum - 1, result + ')', results);
+        } else {
+            if (leftCount > 0) {
+                generateParenthesisCore(results, result + '(', leftCount - 1, rightCount);
+            }
+            
+            if (rightCount > leftCount) {
+                generateParenthesisCore(results, result + ')', leftCount, rightCount - 1);
+            }
         }
     }
 };

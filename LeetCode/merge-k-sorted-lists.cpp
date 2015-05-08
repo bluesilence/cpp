@@ -1,20 +1,24 @@
 class Solution {
 public:
     ListNode *mergeKLists(vector<ListNode *> &lists) {
-        int k = lists.size();
-        if (k == 0)
+        if (lists.empty())
             return NULL;
         
-        int step;
+        int k = lists.size();
+        int halfFloor, halfCeiling;
         
-        //Divide-and-Conquer -- Time complexity: O(nklogk), where n is the average length of all the lists
+        //k is the length of lists that haven't been merged
         while (k > 1) {
-            step = (k + 1) / 2;
-            for (int i = 0; i < k/2; i++) {
-                lists[i] = merge2Lists(lists[i], lists[i + step]);
+            //halfCeiling is the step between 2 lists that can be merged
+            halfCeiling = (k + 1) / 2;
+            //halfFloor is the pair of lists that can be merged
+            halfFloor = k / 2;
+            for (int i = 0; i < halfFloor; i++) {
+                lists[i] = merge2Lists(lists[i], lists[i+halfCeiling]);
             }
             
-            k = step;
+            //There might be 1 list left unmerged, so k is halfCeiling, not halfFloor
+            k = halfCeiling;
         }
         
         return lists[0];

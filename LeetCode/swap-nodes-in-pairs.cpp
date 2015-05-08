@@ -8,29 +8,25 @@
  */
 class Solution {
 public:
-    ListNode *swapPairs(ListNode *head) {
-        if (!head || !head->next)
-            return head;
-        
+    ListNode* swapPairs(ListNode* head) {
         ListNode *dummyHead = new ListNode(0);
         dummyHead->next = head;
         
-        ListNode *pre = dummyHead;
-        ListNode *p = head;
-        ListNode *q;
-        while (p && p->next) {
-            q = p->next;
-            //Swap p and q
-            p->next = q->next;
-            pre->next = q;
-            q->next = p;
-            //Adjust link to head node
-            if (head == p)
-                head = q;
-            pre = p;
-            p = pre->next;
+        ListNode *p = dummyHead;
+        ListNode *p1, *p2;
+        ListNode *tmp;
+        while (p && p->next && p->next->next) {
+            p1 = p->next;
+            p2 = p1->next;
+            tmp = p2->next;
+            p->next = p2;
+            p2->next = p1;
+            p1->next = tmp;
+            
+            p = p1;
         }
         
+        head = dummyHead->next;
         delete dummyHead;
         
         return head;

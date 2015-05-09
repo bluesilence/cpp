@@ -1,28 +1,32 @@
 class Solution {
 public:
-    vector<vector<int> > permute(vector<int> &num) {
-        if(num.size() == 0) return res;
-        permuteCore(num, 0);
-        return res;
+    vector<vector<int>> permute(vector<int>& nums) {
+        vector<vector<int>> results;
+        
+        permuteCore<int>(results, nums, 0);
+        
+        return results;
     }
-    
+
 private:
-    vector<vector<int> > res;
-    void permuteCore(vector<int> &num, int start){
-        if(start == num.size()){
-            res.push_back(num);
+    template<class T>
+    void permuteCore(vector<vector<T>> &results, vector<T> &nums, unsigned int start) {
+        if (start == nums.size()) {
+            results.push_back(nums);
+            return;
         }
         
-        for(int i = start; i < num.size(); ++i){
-            swap(num, start, i);
-            permuteCore(num, start+1);
-            swap(num, start, i);
+        for (int i = start; i < nums.size(); i++) {
+            swap(nums, i, start);
+            permuteCore(results, nums, start+1);
+            swap(nums, i, start);
         }
     }
-    
-    void swap(vector<int> &num, int left, int right){
-        int tmp = num[left];
-        num[left] = num[right];
-        num[right] = tmp;
+
+    template<class T>
+    void swap(vector<T> &nums, unsigned int i, unsigned int j) {
+        T tmp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = tmp;
     }
 };

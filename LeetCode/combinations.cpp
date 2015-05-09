@@ -22,6 +22,7 @@ private:
             return;
         }
         
+        //Use pure recursion, no loop
         result.push_back(i);
         combineCore(results, result, n, i + 1, count - 1);
         result.pop_back();

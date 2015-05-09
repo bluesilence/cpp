@@ -1,24 +1,21 @@
 class Solution {
 public:
-    int sqrt(int x) {
-        if (x <= 1)
-            return x;
+    int mySqrt(int x) {
+        int begin = 0;
+        int end = x/2 + 1; //sqrt of x <= half of x
+        while(begin <= end) {
+            long mid = (begin + end) / 2;
+            long long sq = mid * mid;
             
-        //Binary search
-        int start = 0;
-        int end = x;
-        int mid;
-        
-        while ((end - start) > 1) { //If (end-start) == 1, then mid = start, the loop will be infinite
-            mid = (start + end) / 2;
-            if (mid == x/mid)   //Use devision instead of multiplication is to avoid int overflow
+            if(sq == x)
                 return mid;
-            else if (mid < x/mid)
-                start = mid;
-            else
-                end = mid;
-        }
-        
-        return start;
+            else if (sq < x)
+                begin = mid + 1;
+            else 
+                end = mid - 1;            
+       }
+       
+       //Because "begin = mid + 1", when the loop ends, begin tends to be > end
+       return end;
     }
 };

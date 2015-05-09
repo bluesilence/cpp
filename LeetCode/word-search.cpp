@@ -2,21 +2,21 @@ class Solution {
 public:
     //Use DFS
     bool exist(vector<vector<char> > &board, string word) {
-        if (word.size() == 0)
+        if (word.empty() || board.empty() || board[0].empty())
             return false;
         
-        const int width = board.size();
-        const int height = board[0].size();
+        vector<vector<bool> > visited(board.size(), vector<bool>(board[0].size(), false));
         
         const char firstChar = word[0];
-        vector<vector<bool> > visited(width, vector<bool>(height, false));
         
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
+        for (int i = 0; i < board.size(); i++) {
+            for (int j = 0; j < board[0].size(); j++) {
                 if (board[i][j] == firstChar) {
                     visited[i][j] = true;
-                    if (word.size() == 1 || dfs(board, word, visited, i, j, 1))
+                    if (dfs(board, word, visited, i, j, 1)) {
                         return true;
+                    }
+                    
                     visited[i][j] = false;
                 }
             }
@@ -26,39 +26,36 @@ public:
     }
 
 private:
-    bool dfs(vector<vector<char> > &board, string word, vector<vector<bool> > &visited, int i, int j, int index) {
-        if (index == word.size())
+    bool dfs(vector<vector<char> > &board, string &word, vector<vector<bool> > &visited, int row, int col, int nextCharIndex) {
+        if (nextCharIndex == word.size()) {
             return true;
-        
-        bool result = false;
-        //Move up
-        if (i > 0 && !visited[i-1][j] && board[i-1][j] == word[index]) {
-            visited[i-1][j] = true;
-            result = dfs(board, word, visited, i-1, j, index+1);
-            visited[i-1][j] = false;
         }
         
-        //Move left
-        if (!result && j > 0 && !visited[i][j-1] && board[i][j-1] == word[index]) {
-            visited[i][j-1] = true;
-            result = dfs(board, word, visited, i, j-1, index+1);
-            visited[i][j-1] = false;
+        bool success = false;
+        if (!success && row + 1 < board.size() && !visited[row+1][col] && word[nextCharIndex] == board[row+1][col]) {
+            visited[row+1][col] = true;
+            success = dfs(board, word, visited, row + 1, col, nextCharIndex + 1);
+            visited[row+1][col] = false;
         }
         
-        //Move down
-        if (!result && i+1 < board.size() && !visited[i+1][j] && board[i+1][j] == word[index]) {
-            visited[i+1][j] = true;
-            result = dfs(board, word, visited, i+1, j, index+1);
-			      visited[i+1][j] = false;
+        if (!success && row - 1 >= 0 && !visited[row-1][col] && word[nextCharIndex] == board[row-1][col]) {
+            visited[row-1][col] = true;
+            success = dfs(board, word, visited, row - 1, col, nextCharIndex + 1);
+            visited[row-1][col] = false;
         }
         
-        //Move right
-        if (!result && j+1 < board[0].size() && !visited[i][j+1] && board[i][j+1] == word[index]) {
-            visited[i][j+1] = true;
-            result = dfs(board, word, visited, i, j+1, index+1);
-			      visited[i][j+1] = false;
+        if (!success && col + 1 < board[0].size() && !visited[row][col+1] && word[nextCharIndex] == board[row][col+1]) {
+            visited[row][col+1] = true;
+            success = dfs(board, word, visited, row, col + 1, nextCharIndex + 1);
+            visited[row][col+1] = false;
         }
         
-        return result;
+        if (!success && col - 1 >= 0 && !visited[row][col-1] && word[nextCharIndex] == board[row][col-1]) {
+            visited[row][col-1] = true;
+            success = dfs(board, word, visited, row, col - 1, nextCharIndex + 1);
+            visited[row][col-1] = false;
+        }
+        
+        return success;
     }
 };

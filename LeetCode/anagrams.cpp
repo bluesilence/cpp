@@ -1,28 +1,27 @@
-class Solution {  
-public:  
-    vector<string> anagrams(vector<string> &strs) {
-        //Record the count of anagrams
-        map<string, int> baseWord;  
+class Solution {
+public:
+    vector<string> anagrams(vector<string>& strs) {
+        vector<string> results;
         
-        for(int i = 0; i < strs.size(); i++)  {  
-            string tmpStr = strs[i];  
-            sort(tmpStr.begin(), tmpStr.end());  
-            if(baseWord.find(tmpStr) == baseWord.end())
-                baseWord[tmpStr] = 1;
-            else
-                baseWord[tmpStr]++;  
-        }  
-          
-        vector<string> results;  
+        //Record the index of original string in strs for the first anagram
+        map<string, int> anagramOriginMap;
         
-        //Find if an original string has anagram
-        for(int i = 0; i < strs.size(); i++)  {  
-            string tmpStr = strs[i];  
-            sort(tmpStr.begin(), tmpStr.end());
-            if (baseWord.find(tmpStr) != baseWord.end() && baseWord[tmpStr] > 1)
-                results.push_back(strs[i]);  
-        }  
-          
-        return results;  
-    }  
-};  
+        for (int i = 0; i < strs.size(); i++) {
+            string tmp = strs[i];
+            sort(tmp.begin(), tmp.end());
+            if (anagramOriginMap.find(tmp) == anagramOriginMap.end()) {
+                anagramOriginMap[tmp] = i;
+            } else {
+                if (anagramOriginMap[tmp] == -1) { //Already inserted the first anagram
+                    results.push_back(strs[i]);
+                } else {
+                    results.push_back(strs[anagramOriginMap[tmp]]);    //First anagram
+                    anagramOriginMap[tmp] = -1;
+                    results.push_back(strs[i]);
+                }
+            }
+        }
+        
+        return results;
+    }
+};

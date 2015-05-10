@@ -1,5 +1,5 @@
 /**
- * Definition for binary tree
+ * Definition for a binary tree node.
  * struct TreeNode {
  *     int val;
  *     TreeNode *left;
@@ -9,38 +9,35 @@
  */
 class Solution {
 public:
-    int sumNumbers(TreeNode *root) {
-        long long sum = 0;
+    int sumNumbers(TreeNode* root) {
         if (!root)
-            return sum;
+            return 0;
         
-        long long num = 0;
-        sumCore(root, sum, num);
+        long long sum = 0;
+        
+        sumNumbersCore(root, sum, 0);
         
         if (sum > numeric_limits<int>::max())
             return numeric_limits<int>::max();
         else
-            return (int)sum;
+            return sum;
     }
 
 private:
-    void sumCore(TreeNode *root, long long &sum, long long &num) {
-        if (!root) {
+    void sumNumbersCore(TreeNode *node, long long &sum, long long num) {
+        num += node->val;
+        
+        if (!node->left && !node->right) {  //Leaf node
             sum += num;
             return;
         }
         
-        int originalNum = num;
-        num = num * 10 + root->val;
+        if (node->left) {
+            sumNumbersCore(node->left, sum, num * 10);
+        }
         
-        if (root->left)
-            sumCore(root->left, sum, num);
-        if (root->right)
-            sumCore(root->right, sum, num);
-        
-        if (!root->left && !root->right)    //Leaf node
-            sum += num;
-        
-        num = originalNum;
+        if (node->right) {
+            sumNumbersCore(node->right, sum, num * 10);
+        }
     }
 };

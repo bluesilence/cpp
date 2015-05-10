@@ -10,42 +10,41 @@
 class Solution {
 public:
     vector<vector<int> > levelOrder(TreeNode *root) {
-        vector<vector<int> > result;
+        vector<vector<int> > results;
         if (!root)
-            return result;
+            return results;
         
         queue<TreeNode*> q;
         q.push(root);
+        q.push(0);  //Mark of the end of level
         
-        //Track the count for each level in the queue
-        int currentLevelCount = 1;
-        int nextLevelCount = 0;
-        vector<int> tmp;
-        
-        while(!q.empty()) {
-            tmp.clear();
-            nextLevelCount = 0;
+        TreeNode *tmp;
+        vector<int> level;
+        while (!q.empty()) {
+            tmp = q.front();
+            q.pop();
             
-            for (int i = 0; i < currentLevelCount; i++) {
-                root = q.front();
-                q.pop();
-                
-                tmp.push_back(root->val);
-                if (root->left) {
-                    q.push(root->left);
-                    nextLevelCount++;
+            if (tmp == 0) {
+                if (!level.empty()) {   //At the end of the traversal, there will be 2 adjacent 0s, and level will be empty then
+                    results.push_back(level);
+                    level.clear();
+                }
+            } else {
+                level.push_back(tmp->val);
+                if (tmp->left) {
+                    q.push(tmp->left);
                 }
                 
-                if (root->right) {
-                    q.push(root->right);
-                    nextLevelCount++;
+                if (tmp->right) {
+                    q.push(tmp->right);
+                }
+                
+                if (q.front() == 0) {   //Reached the end of current level, insert the terminator for the next level
+                    q.push(0);
                 }
             }
-            
-            currentLevelCount = nextLevelCount;
-            result.push_back(tmp);
         }
         
-        return result;
+        return results;
     }
 };

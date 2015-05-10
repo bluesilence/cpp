@@ -1,43 +1,50 @@
 class Solution {
 public:
     int numDecodings(string s) {
-        if (s.empty() || s[0] == '0')
+        if (s.empty())
             return 0;
-            
-        int size = s.size();
-        if (size == 1)
-            return 1;
         
-        vector<int> f(size , 0);   //f[i] indicates how many ways to decode till index i in string s
+        const int size = s.size();
+        //DP. Use an array ways[s.size()+1], ways[i] indicate how many ways to decode at s[i-1]
+        //This is to reduce duplicate code so that the loop can start from s[1] with ways[i-2]
+        //Special case: '0' can only be decoded with the digit prior to it
+        //ways[0] = 1
+        //if s[0] != '0', ways[1] = 1, else return 0
+        //if s[1] != '0', ways[2] = int(s[0...1]) <= 26 ? ways[0] + ways[1] : ways[1]
+        //Else, ways[1] = int(s[0...1]) <= 26 ? ways[0] : return 0
+        //So that ways[s.size()-1] is the total ways of decodings for s.
+        vector<int> ways(size+1, 0);
         
-        f[0] = 1;
-        f[1] = 2;
-        
-        //Special cases: s[1] == '0'
-        if (s[1] == '0' && (s[0] == '1' || s[0] == '2'))    //s[0] and s[1] form 10 and 20. s[1] cannot be decoded as 1 digit '0'
-            f[1] = 1;
-        
-        //Special cases: s[1] == '0' 
-        if (s[1] == '0' && !(s[0] == '1' || s[0] == '2'))   //30, 40, ..., 90 are invalid codes
-            return 0;
-            
-        if (s[0] == '2' && s[1] > '6' || s[0] > '2')    //s[0] and s[1] cannot form 2-digit-number which <= 26, the only way to decode s[1] is to decode it as 1 digit
-            f[1] = 1;
-        
-        for(int i = 2; i < size; i++) {
-            f[i] = f[i-1];    //Decode digit i as 1-digit number
-            if(s[i] == '0' && (s[i-1] == '1' || s[i-1] == '2')) { //10 and 20
-                f[i] = f[i-2];
-                continue;
-            }
-            
-            if(s[i] == '0' && !(s[i-1] == '1' || s[i-1] == '2'))  //Invalid code
-                return 0;
-            
-            if(s[i-1] == '1' || (s[i-1] == '2' && s[i] >= '1' && s[i] <= '6'))   //Decode digit i with digit (i-1) as 2-digit number
-                f[i] += f[i-2];
+        if (s[0] != '0') {
+            ways[0] = 1;
+            ways[1] = 1;
+        } else {
+            return 0;   //Invalid string at s[0]
         }
         
-        return f[size-1];
+        for (int i = 1; i < size; i++) {
+            if (s[i] != '0') {
+                ways[i+1] = ways[i];   //Decode as single digit
+                if (isValidTens(s[i-1], s[i])) {
+                    ways[i+1] += ways[i-1]; //Decode as double digits
+                }
+            } else {
+                if (isValidTens(s[i-1], s[i])) {
+                    ways[i+1] = ways[i-1];  //Can only be decoded as double digits
+                } else {
+                    return 0;   //Invalid string at s[i]
+                }
+            }
+        }
+        
+        return ways[size];
+    }
+
+private:
+    bool isValidTens(char tenDigit, char oneDigit) {
+        if (tenDigit > '2' || tenDigit == '0' || tenDigit == '2' && oneDigit > '6')
+            return false;
+        
+        return true;
     }
 };

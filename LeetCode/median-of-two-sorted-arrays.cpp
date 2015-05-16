@@ -1,35 +1,47 @@
 class Solution {
 public:
-	double findMedianSortedArrays(int A[], int m, int B[], int n) {
-		int totalNumCount = m + n;
-		if (isOdd(totalNumCount))
-			return findKth(A, m, B, n, totalNumCount / 2 + 1);
-		else    //The global medium is the average of the 2 middle numbers
-			return (findKth(A, m, B, n, totalNumCount / 2)
-					+ findKth(A, m, B, n, totalNumCount / 2 + 1)) / 2;
-	}
+    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        const int len1 = nums1.size();
+        const int len2 = nums2.size();
+        
+        const int len = len1 + len2;
+        //K starts from 1 to avoid negative array index (len/2 - 1)
+        if (len & 0x01 == 1) {
+            return findKth(nums1, 0, nums2, 0, len/2 + 1);
+        } else {
+            return (findKth(nums1, 0, nums2, 0, len/2) + findKth(nums1, 0, nums2, 0, len/2 + 1)) / 2;
+        }
+    }
 
 private:
-    double findKth(int a[], int m, int b[], int n, int k)  {  
-        //always assume that m is equal or smaller than n  
-        if (m > n)  
-            return findKth(b, n, a, m, k);  
-        if (m == 0)  
-            return b[k - 1];  
-        if (k == 1)  
-            return min(a[0], b[0]);  
+    double findKth(vector<int> &nums1, int begin1, vector<int> &nums2, int begin2, int k) {
+        // The length of nums1 should be less than that of nums2
+        if (nums1.size() > nums2.size())
+            return findKth(nums2, begin2, nums1, begin1, k);
         
-        //divide k into two parts  
-        int pa = min(k / 2, m), pb = k - pa;  
-        if (a[pa - 1] < b[pb - 1])  
-            return findKth(a + pa, m - pa, b, n, k - pa);  
-        else if (a[pa - 1] > b[pb - 1])  
-            return findKth(a, m, b + pb, n - pb, k - pb);  
-        else  
-            return a[pa - 1];  
-    }  
-    
-    bool isOdd(int num) {
-        return num & 0x1;
+        if (begin1 == nums1.size())
+            return nums2[begin2 + k - 1];
+            
+         if (begin2 == nums2.size())
+            return nums1[begin1 + k - 1];
+            
+        if (k == 1)
+            return min(nums1[begin1], nums2[begin2]);
+        
+        //The kth number of the merged vector must exist in the (1~kth numbers of nums1) plus the (1~kth numbers of nums2)
+        //Use binary search, to locate the (k/2)th number, we know it must be in either nums1[1...k/2] or nums2[1...k/2]
+        //If nums1[k/2] < nums2[k/2], in the merged vector of nums1[1...k/2] and nums2[1...k/2], the kth should exist in [nums1[k/2] + 1, nums2[k/2]], so we can exclude nums1[1...k/2]
+        //set k <- k/2, recursively call findKth(nums1, begin1 + k/2, num2, begin2, k/2)
+        //Else, discard nums2[1...k/2]
+        //Once one of the vectors reaches its end, return the remaining kth element in the other vector
+        int partition1 = min(k/2, int(nums1.size() - begin1));
+        int partition2 = k - partition1;
+        if (nums1[begin1 + partition1 - 1] < nums2[begin2 + partition2 - 1]) {
+            return findKth(nums1, begin1 + partition1, nums2, begin2, k - partition1);
+        } else if (nums1[begin1 + partition1 - 1] > nums2[begin2 + partition2 - 1]) {
+            return findKth(nums1, begin1, nums2, begin2 + partition2, k - partition2);
+        } else {
+            return nums1[begin1 + partition1 - 1];
+        }
     }
 };

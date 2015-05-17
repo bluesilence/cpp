@@ -1,43 +1,44 @@
 class Solution {
 public:
     int divide(int dividend, int divisor) {
-        if (0 == divisor)
+        if (divisor == 0)
             return numeric_limits<int>::max();
         
-        bool isNegative = false;
-        long long result = 0;
-		    //long is not enough, because it takes 4 bits as the same as int. It must be long long (8 bits) here
-		    long long divid = dividend, divis = divisor;	//To prevent abs cause overflow
-
-		    //Get absolute dividend and divisor
-        if (dividend < 0) {
-            isNegative = !isNegative;
-            divid = 0 - divid;
+        //Note: MIN_INT may overflow when converted to absolute value
+        long long absDividend = dividend > 0 ? dividend : (0 - (long long)dividend);
+        long long absDivisor = divisor > 0 ? divisor : (0 - (long long)divisor);
+        long long absResult = dividePositive(absDividend, absDivisor);
+        long long result;
+        
+        if (dividend > 0 && divisor < 0 || dividend < 0 && divisor > 0) {
+            result = -1 * absResult;
+        } else {
+            result = absResult;
         }
         
-        if (divisor < 0) {
-            isNegative = !isNegative;
-            divis = 0 - divis;
-        }
-        
-		    long long count = 0;
-		    long long sum = 0;
-        while (divid >= divis) {
-          count = 1;                //a >= b ensures count >= 1
-          sum = divis;
-          while (sum<<1 <= divid) {
-            sum <<= 1;
-            count <<= 1;
-          }
-
-          divid -= sum;
-          result += count;
-        }
-        
-        result = isNegative ? -1 * result : result; //integer's MIN_VALUE / (-1) == 0 - MIN_VALUE > MAX_VALUE, overflow
-        if (result > numeric_limits<int>::max() || result < numeric_limits<int>::min())
-          return numeric_limits<int>::max();
+        if (result > numeric_limits<int>::max())
+            return numeric_limits<int>::max();
+        //else if (result < numeric_limits<int>::min())  //Impossible, since MIN_INT / 1 == MIN_INT, it can't be smaller
+        //    return numeric_limits<int>::min();
         else
-          return (int)result;
+            return (int)result;
+    }
+    
+private:
+    long long dividePositive(long long dividend, long long divisor) {
+        long long result = 0;
+        while (dividend >= divisor) {
+            long long sum = divisor;
+            long long count = 1;
+            while (dividend >= (sum << 1)) {
+                sum <<= 1;
+                count <<= 1;
+            }
+            
+            result += count;
+            dividend -= sum;
+        }
+        
+        return result;
     }
 };

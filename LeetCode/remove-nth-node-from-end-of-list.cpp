@@ -8,47 +8,32 @@
  */
 class Solution {
 public:
-    ListNode *removeNthFromEnd(ListNode *head, int n) {
-        if (!head)
-            return NULL;
-        
-        if (!head->next && n == 1)
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        if (!head || (!head->next && n > 0))
             return NULL;
             
-        ListNode *p = head, *q = head, *pre = p;
+        ListNode *dummyHead = new ListNode(0);
+        dummyHead->next = head;
         
-        while (q && q->next && n > 1) {
-            q = q->next;
+        ListNode *slow = dummyHead;
+        ListNode *fast = slow;
+        
+        while (n > 0 && fast && fast->next) {
+            fast = fast->next;
             n--;
         }
         
-        //The nth node from the end doesn't exist
-        if (n > 1) {
-            return head;
-        } else {
-            //Locate the nth node from the end
-            while (q->next) {
-                q = q->next;
-                pre = p;
-                p = p->next;
-            }
+        while (fast->next) {
+            slow = slow->next;
+            fast = fast->next;
         }
         
-        if (p == q) {   //n == 1
-            pre->next = q->next;
-            if (head == p) {
-                head = p->next;
-            }
-            
-            delete p;
-        } else {
-            //Delete p by copying the value of p->next
-            ListNode *tmp = p->next;
-            p->val = tmp->val;
-            p->next = tmp->next;
-            
-            delete tmp;
-        }
+        ListNode *tmp = slow->next;
+        slow->next = tmp->next;
+        delete tmp;
+        
+        head = dummyHead->next;
+        delete dummyHead;
         
         return head;
     }

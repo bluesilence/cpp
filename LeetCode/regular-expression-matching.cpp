@@ -27,10 +27,7 @@ private:
         }
         
         if (!result) {
-            if (pChar == '.')
-                result = matchCore(s, sBegin + 1, p, pBegin + 1);
-            else
-                result = s[sBegin] == p[pBegin] && matchCore(s, sBegin + 1, p, pBegin + 1);
+            result = (s[sBegin] == p[pBegin] || p[pBegin] == '.') && matchCore(s, sBegin + 1, p, pBegin + 1);
         }
         
         return result;

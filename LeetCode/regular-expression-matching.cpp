@@ -1,24 +1,38 @@
 class Solution {
 public:
-    bool isMatch(const char *s, const char *p) {   
-        if (*p == 0)
-            return *s == 0;  
-            
-        if (*(p+1) != '*')  {  
-            if (*s != 0 && (*p == *s || *p == '.'))
-                return isMatch(s+1, p+1);
-            else 
-                return false;
-        } else { // *(p+1) == '*'  
-            while (*s != 0 && (*s == *p || *p == '.')) { //Try to match *p for (0~n) times 
-                if (isMatch(s, p+2))
-                    return true;
-                    
-                s++;  
+    bool isMatch(string s, string p) {
+        if (s.empty() && p.empty())
+            return true;
+        
+        return matchCore(s, 0, p, 0);
+    }
+
+private:
+    bool matchCore(string s, int sBegin, string p, int pBegin) {
+        if (sBegin == s.size() && pBegin == p.size())
+            return true;
+        
+        char pChar = p[pBegin];
+        bool result = false;
+        if (pBegin + 1 < p.size()) {
+            char pCharNext = p[pBegin + 1];
+        
+            if (pCharNext == '*') {
+                result = matchCore(s, sBegin, p, pBegin + 2);
+                while (!result && sBegin < s.size() && (s[sBegin] == pChar || pChar == '.')) {
+                    sBegin++;
+                    result = matchCore(s, sBegin, p, pBegin + 2);
+                }
             }
-            
-            //Skip *p and *(p+1), try to match from *(p+2). Catch tail cases (*s == 0)
-            return isMatch(s, p+2);  
-        }  
+        }
+        
+        if (!result) {
+            if (pChar == '.')
+                result = matchCore(s, sBegin + 1, p, pBegin + 1);
+            else
+                result = s[sBegin] == p[pBegin] && matchCore(s, sBegin + 1, p, pBegin + 1);
+        }
+        
+        return result;
     }
 };

@@ -1,21 +1,19 @@
 class Solution {
 public:
-    int removeDuplicates(int A[], int n) {
-        if (n == 0)
-            return 0;
-            
-        int pos = 0;  //Position to copy each distinct number
-        int key = A[0]; //Record each distinct number
-        for(int i = 1; i < n; i++) {
-            if (A[i] != key) {
-                A[pos++] = key;
-                key = A[i];                
+    int removeDuplicates(vector<int>& nums) {
+        if (nums.size() < 2)
+            return nums.size();
+        
+        int pSlow = 0;
+        int pFast = 1;
+        while (pFast < nums.size()) {
+            if (nums[pFast] != nums[pSlow]) {
+                nums[++pSlow] = nums[pFast];
             }
+            
+            pFast++;
         }
         
-        //Important: copy last distinct number
-        A[pos++] = key;
-        
-        return pos;
+        return ++pSlow;
     }
 };

@@ -1,53 +1,60 @@
 class Solution {
 public:
-    int findLeftMost(int A[], int n, int target) {
-        if(n == 0)
-            return -1;
+    vector<int> searchRange(vector<int> A, int target) {
+        vector<int> results(2, -1);
+        
+        if (A.empty())
+            return results;
             
-        int left = 0;
-        int right = n-1;
-        while (left <= right) {  //q1
-            int mid = (left+right) / 2;
-            if (A[mid] < target)    //q2
-                left = mid+1;
-            else
-                right = mid-1;
+        int startPos = findLeftMost(A, target);
+        int endPos = findRightMost(A, target);
+        
+        results[0] = startPos;
+        results[1] = endPos;
+        
+        return results;
+    }
+
+private:
+    int findLeftMost(vector<int> &A, int target) {
+        if (A.empty())
+            return -1;
+        
+        int begin = 0, end = A.size() - 1;
+        int mid;
+        while (begin <= end) {
+            mid = (begin + end) / 2;
+            if (target > A[mid]) {
+                begin = mid + 1;
+            } else {    //When target == A[mid], move left
+                end = mid - 1;
+            }
         }
         
-        if(A[left] == target) //q3
-            return left;
-            
-        return -1;
+        if (A[begin] == target) //Using begin to compare with target, is because begin is the most accurate position (L27)
+            return begin;
+        else
+            return -1;
     }
     
-    int findRightMost(int A[], int n, int target) {
-        if(n == 0)
+    int findRightMost(vector<int> &A, int target) {
+        if (A.empty())
             return -1;
-            
-        int left = 0;
-        int right = n-1;
-        while (left <= right) { //q1
-            int mid = (left+right) / 2;
-            if (A[mid] > target) //q2
-                right = mid-1;
-            else
-                left = mid+1;
+        
+        int begin = 0, end = A.size() - 1;
+        int mid;
+        while (begin <= end) {
+            mid = (begin + end) / 2;
+            if (target < A[mid]) {
+                end = mid - 1;
+            } else {    //When target == A[mid], move right
+                begin = mid + 1;
+            }
         }
         
-        if(A[right] == target) //q3
-            return right;
-            
-        return -1;
-    }
-    
-    vector<int> searchRange(int A[], int n, int target) {
-        int startPos = findLeftMost(A, n, target);
-        int endPos = findRightMost(A, n, target);
-        
-        vector<int> ans(2);
-        ans[0] = startPos;
-        ans[1] = endPos;
-        
-        return ans;
+        if (A[end] == target) //Using end to compare with target, is because end is the most accurate position (L49)
+            return end;
+        else
+            return -1;
     }
 };

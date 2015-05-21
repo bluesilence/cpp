@@ -1,65 +1,76 @@
 class Solution {
 public:
     string multiply(string num1, string num2) {
-        if (num1.empty() || num2.empty())
+        if (!isValid(num1) || !isValid(num2))
             return "";
         
-        if (!isValidNum(num1) || !isValidNum(num2))
-            throw "Invalid number string";
-            
-        vector<int> v1 = convertStrToVec(num1);
-        vector<int> v2 = convertStrToVec(num2);
+        vector<int> numVec1(num1.size(), 0);
+        vector<int> numVec2(num2.size(), 0);
         
-        vector<int> result(num1.size()+num2.size(), 0);
-
-        for (int i = 0; i < v1.size(); i++) {
-            for (int j = 0; j < v2.size(); j++) {
-                result[i+j] += v1[i] * v2[j];
-            }
-        }
+        strToVec(num1, numVec1);
+        strToVec(num2, numVec2);
         
-        for (int k = 0; k+1 < result.size(); k++) {
-            if (result[k] > 9) {    //Carry to next digit
-                result[k+1] += result[k]/10;
-                result[k] %= 10;
-            }
-        }
+        vector<int> resultVec(num1.size() + num2.size(), 0);
         
-        return convertVecToStr(result);
+        multiplyVec(numVec1, numVec2, resultVec);
+        
+        return vecToStr(resultVec);
     }
 
 private:
-    bool isValidNum(string num) {
+    bool isValid(const string &num) {
         if (num.empty())
             return false;
         
         for (int i = 0; i < num.size(); i++) {
-            if (num[i] < '0' || num[i] > '9')
+            if (num[i] > '9' || num[i] < '0')
                 return false;
         }
         
         return true;
     }
     
-    vector<int> convertStrToVec(string &num) {
-        vector<int> result(num.size(), 0);
-        for (int i = 0; i < num.size(); i++) {
-            result[i] = num[num.size()-1-i] - '0';
+    void strToVec(const string &num, vector<int> &vec) {
+        const int len = num.size();
+        for (int i = 0; i < len; i++) {
+            vec[len - 1 - i] = num[i] - '0';
+        }
+    }
+    
+    string vecToStr(vector<int> &vec) {
+        int len = vec.size();
+        for (int i = len - 1; i > 0; i--) { //Preserve the only 0 at index 0
+            if (vec[i] == 0)
+                vec.pop_back(); //Remove redundant 0 at highest digit
+            else
+                break;
+        }
+        
+        len = vec.size();
+        string result;
+        
+        for (int i = len - 1; i >= 0; i--) {
+            result += vec[i] + '0';
         }
         
         return result;
     }
     
-    string convertVecToStr(vector<int> &vec) {
-        string result = "";
-        int highestDigit = vec.size() - 1;
-        while (highestDigit >= 1 && vec[highestDigit] == 0)	//If highestDigit = 0, then num = 0
-            highestDigit--;
-            
-        for (int i = highestDigit; i >= 0; i--) {
-            result += vec[i] + '0';
+    void multiplyVec(vector<int> &numVec1, vector<int> &numVec2, vector<int> &resultVec) {
+        const int len1 = numVec1.size();
+        const int len2 = numVec2.size();
+        
+        for (int i = 0; i < len1; i++) {
+            for (int j = 0; j < len2; j++) {
+                resultVec[i + j] += numVec1[i] * numVec2[j];
+            }
         }
         
-        return result;
+        int carry = 0;
+        for (int i = 0; i < len1 + len2; i++) {
+            resultVec[i] += carry;
+            carry = resultVec[i] / 10;
+            resultVec[i] -= 10 * carry;
+        }
     }
 };

@@ -1,74 +1,60 @@
 class Solution {
 public:
     vector<vector<string> > solveNQueens(int n) {
-        vector<vector<string> > results;
         if (n < 1)
-            return results;
+            throw "Queens' number must be positive integer.";
+            
+        vector<vector<string> > results;
         
-        vector<int> oneSolution(n, -1);
+        //Each element's index stands for queen in one column, each element's value stands for queen's row
+        vector<int> positions(n, 0);
         
-        //Initialize each row, queen id starts from 0
-        for (int i = 0; i < n; i++) {
-            oneSolution[i] = i;
-        }
+        vector<string> result(n);
         
-        permute(results, oneSolution, n, 0);
+        permutation(results, result, positions, n, 0);
         
         return results;
     }
-    
+
 private:
-    void permute(vector<vector<string> > &results, vector<int> &oneSolution, int n, int index) {
-        if (index >= n) {
-            if (isValid(oneSolution, n))
-                results.push_back(print(oneSolution));
+    void permutation(vector<vector<string> > &results, vector<string> &result, vector<int> &positions, const int n, int queenCol) {
+        if (queenCol == n) {    //Find one solution
+            fillResult(positions, result);
+            results.push_back(result);
+        } else {
+            for (int i = 0; i < n; i++) {
+                positions[queenCol] = i;
                 
-            return;
-        }
-        
-        for (int i = index; i < n; i++) {
-            swap(oneSolution, i, index);
-            permute(results, oneSolution, n, index + 1);
-            swap(oneSolution, i, index);
+                if (isValid(queenCol, positions)) {
+                    permutation(results, result, positions, n, queenCol + 1);
+                }
+            }
         }
     }
     
-    bool isValid(vector<int> &solution, int n) {
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {   //Check diagonal
-                if (j - i == solution[j] - solution[i] || i - j == solution[j] - solution[i])
-                    return false;
-            }
+    //Check if 1 queen is valid against queens in columns before her, which are already permuted
+    bool isValid(int col, vector<int> &positions) {
+        if (col < 0 || col >= positions.size())
+            return false;
+            
+        //Check diagonals
+        for (int i = 0; i < col; i++) {
+            if (positions[i] == positions[col] || abs(positions[i] - positions[col]) == (col - i))
+                return false;
         }
         
         return true;
     }
     
-    void swap(vector<int> &solution, int col1, int col2) {
-        if (col2 == col1 || col1 < 0 || col2 < 0 || col1 >= solution.size() || col2 >= solution.size())
-            return;
+    void fillResult(vector<int> &positions, vector<string> &result) {
+        std::fill(result.begin(), result.end(), string(result.size(), '.'));    //Initialization
             
-        char tmp = solution[col1];
-        solution[col1] = solution[col2];
-        solution[col2] = tmp;
-    }
-    
-    vector<string> print(vector<int> solution) {
-        vector<string> results;
-        for (int i = 0; i < solution.size(); i++) {
-            string result = "";
-            int col = solution[i];  //The column of Queen in this row
-            for (int j = 0; j < solution.size(); j++) { //Print one row
-                if (j == col) {
-                    result += 'Q';
-                } else {
-                    result += '.';
-                }
-            }
-            
-            results.push_back(result);
-        }
+        int row, col;
         
-        return results;
+        for (int i = 0; i < positions.size(); i++) {
+            row = positions[i];
+            col = i;
+            result[row][col] = 'Q';
+        }
     }
 };

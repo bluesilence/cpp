@@ -1,55 +1,46 @@
-// LeetCode.cpp : 定义控制台应用程序的入口点。
-//
-#include "stdafx.h";
-#include <iostream>;
-#include <vector>;
-using namespace std;
-
 class Solution {
 public:
-    bool isMatch(const char *s, const char *p) {
-        //? match one
-        //* match 0,1,2,3..
-        // aaaabc *c true
-        const char* star = nullptr;
-        const char* rs = nullptr;
+    bool isMatch(string s, string p) {
+        //Scan each character of s
+        //If s reaches its end && p reaches it end, return true
+        //If current character is '*',
+        //Record the current position of s and p, move p's index forward to continue normal matching
+        //If normal matching failed, reload the position of s and p, move both s's and p's indices forward, record the new position of sIndex, then continue normal matching
         
-        while(*s) {
-            if(*s == *p || *p == '?') { //match
-                s++;
-                p++;
+        int sIndex = 0, pIndex = 0;
+        int starIndex = -1;
+        int lastSIndex = -1;
+        while (sIndex < s.size()) {
+            if (s[sIndex] == p[pIndex] || p[pIndex] == '?') {
+                sIndex++;
+                pIndex++;
                 
                 continue;
             }
             
-            if(*p == '*') { 
-                star = p; // record star
-                p++; //match from next p
-                rs = s; // record the position of s , star match null
+            if (p[pIndex] == '*') {
+                starIndex = pIndex;
+                lastSIndex = sIndex;
+                pIndex++;
                 
                 continue;
             }
             
-            if(star != nullptr) { //if have star in front then backtrace
-                p = star + 1; //reset the position of p 
-                s = rs + 1; //star match 1,2,3,4,5.... 
-                rs ++; //record next position for backtrace
+            if (starIndex > -1 && lastSIndex > -1) {
+                sIndex = lastSIndex + 1;
+                pIndex = starIndex + 1;
+                lastSIndex = sIndex;
                 
                 continue;
             }
             
-            return false; //if not match return false
+            return false;
         }
         
-        while(*p == '*') p++; //skip continuing star
+        while (pIndex < p.size() && p[pIndex] == '*') {
+            pIndex++;
+        }
         
-        return *p == '\0'; // successful match
+        return pIndex == p.size();
     }
 };
-
-int main()
-{
-	Solution s;
-	
-	cout<<"Result: "<<s.isMatch("hi", "*?")<<endl;
-}

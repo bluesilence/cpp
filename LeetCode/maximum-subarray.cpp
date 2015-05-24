@@ -1,25 +1,24 @@
 class Solution {
 public:
-    int maxSubArray(int A[], int n) {
-        if (!A || n < 1)
-            return 0;
+    int maxSubArray(vector<int>& nums) {
+        int globalMax = 0;
+        int tempMax = 0;
         
-        int globalMax = 0, tempMax = 0;
-        for (int i = 0; i < n; i++) {
-            tempMax += A[i];
-            if (tempMax > globalMax)
-                globalMax = tempMax;
+        for (int i = 0; i < nums.size(); i++) {
+            tempMax += nums[i];
             
-            //Discard negative sums
-            if (tempMax < 0)
+            if (tempMax < 0) {
                 tempMax = 0;
+            } else if (tempMax > globalMax) {
+                globalMax = tempMax;
+            }
         }
         
-        if (globalMax <= 0)  {   //All elements are negative
-            globalMax = A[0];
-            for (int i = 1; i < n; i++) {
-                if (A[i] > globalMax)
-                    globalMax = A[i];
+        if (globalMax == 0) {   //All the elements are negative
+            globalMax = nums[0];
+            for (int i = 1; i < nums.size(); i++) {
+                if (nums[i] > globalMax)
+                    globalMax = nums[i];
             }
         }
         

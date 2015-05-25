@@ -1,46 +1,41 @@
 class Solution {
 public:
     bool searchMatrix(vector<vector<int> > &matrix, int target) {
-        //Like binary search, use start, end and mid
-        //For 2D search, use startRow, startCol, endRow, endCol, midRow and midCol
         if (matrix.empty() || matrix[0].empty())
             return false;
         
-        const int height = matrix.size();
-        const int width = matrix[0].size();
-        
-        //Determine the row
-        int startRow = 0, endRow = height - 1;
+        int startRow = 0, endRow = matrix.size() - 1;
+        int startCol = 0, endCol = matrix[0].size() - 1;
         int midRow;
+        int midCol;
+        
         while (startRow < endRow) {
             midRow = (startRow + endRow) / 2;
-            if (matrix[midRow][width-1] < target)
-                startRow = midRow + 1;
-            else if (matrix[midRow][0] > target)
+            if (matrix[midRow][startCol] > target) {
                 endRow = midRow - 1;
-            else
-                startRow = endRow = midRow;
+            } else if (matrix[midRow][endCol] < target) {
+                startRow = midRow + 1;
+            } else {
+                startRow = midRow;  //Found target row
+                break;
+            }
         }
         
-        if (endRow < startRow)
-            return false;
-            
-        //Determine the col
-        int startCol = 0, endCol = width - 1;
-        int midCol;
         while (startCol < endCol) {
             midCol = (startCol + endCol) / 2;
-            if (matrix[startRow][midCol] < target)
-                startCol = midCol + 1;
-            else if (matrix[startRow][midCol] > target)
+            if (matrix[startRow][midCol] > target) {
                 endCol = midCol - 1;
-            else
-                startCol = endCol = midCol;
+            } else if (matrix[startRow][midCol] < target) {
+                startCol = midCol + 1;
+            } else {
+                startCol = midCol;  //Found target col
+                break;
+            }
         }
         
-        if (startCol < width && endCol >= 0 && matrix[startRow][startCol] == target)
-			      return true;
-		    else
-			      return false;
+        if (matrix[startRow][startCol] == target)
+            return true;
+        else
+            return false;
     }
 };

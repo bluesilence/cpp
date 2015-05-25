@@ -1,27 +1,36 @@
 class Solution {
 public:
-    bool search(int A[], int n, int target) {
-        if (!A || n < 1)
+    bool search(vector<int> A, int n) {
+        if (A.empty())
             return false;
            
-        int front = 0, end = n-1;
+        int start = 0, end = A.size() - 1;
         int mid;
-        while (front <= end) {
-            mid = (front + end) / 2;
-            if (target == A[mid]) {
+        
+        while (start <= end) {
+            mid = (start + end) / 2;
+            if (n == A[mid]) {
                 return true;
-            } else if (A[front] < A[mid]) {
-                if (target >= A[front] && target < A[mid])  //target exists in A[front, mid-1]
+            }
+            
+            if (A[mid] > A[start]) {
+                if (n >= A[start] && n < A[mid]) {
                     end = mid - 1;
-                else   //target exists in A[mid+1, end]
-                    front = mid + 1;
-            } else if (A[front] > A[mid]) {
-                if (target > A[mid] && target <= A[end])  //target exists in A[mid+1, end]
-                    front = mid + 1;
-                else    //target exists in A[front, mid-1]
+                } else {
+                    start = mid + 1;
+                }
+            } else if (A[mid] < A[end]) {
+                if (n > A[mid] && n <= A[end]) {
+                    start = mid + 1;
+                } else {
                     end = mid - 1;
-            } else {    //A[front] == A[mid], cannot determine the order
-                front++;
+                }
+            } else if (A[mid] == A[start]) {
+                start++;
+            } else if (A[mid] == A[end]) {
+                end--;
+            } else {    //Input array is invalid
+                break;
             }
         }
         

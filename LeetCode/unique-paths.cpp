@@ -1,20 +1,27 @@
 class Solution {
 public:
     int uniquePaths(int m, int n) {
-        // Start typing your C/C++ solution below
-        // DO NOT write int main() function
-        vector<vector<int> > f(m, vector<int>(n));
+        if (m < 1 || n < 1)
+            return 0;
         
-        for(int i = 0; i < n; i++)
-            f[0][i] = 1;
-            
-        for(int i = 0; i < m; i++)
-            f[i][0] = 1;
-            
-        for(int i = 1; i < m; i++)
-            for(int j = 1; j < n; j++)
-                f[i][j] = f[i-1][j] + f[i][j-1];
-                
-        return f[m-1][n-1];
+        vector<vector<int> > pathCounts(m, vector<int>(n, 0));
+        
+        pathCounts[m-1][n-1] = 1;
+        
+        for (int i = m-2; i >= 0; i--) {    //Last column
+            pathCounts[i][n-1] = 1;
+        }
+        
+        for (int i = n-2; i >= 0; i--) {    //Last row
+            pathCounts[m-1][i] = 1;
+        }
+        
+        for (int i = m-2; i >= 0; i--) {
+            for (int j = n-2; j >= 0; j--) {
+                pathCounts[i][j] = pathCounts[i+1][j] + pathCounts[i][j+1];
+            }
+        }
+        
+        return pathCounts[0][0];
     }
 };

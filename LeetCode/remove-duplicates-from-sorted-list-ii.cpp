@@ -8,33 +8,36 @@
  */
 class Solution {
 public:
-    ListNode *deleteDuplicates(ListNode *head) {
-        //Use 2 pointers, 1 points to the first distinct node, 1 moves forward until the next node is not duplicate
-        if (!head || !(head->next))
+    ListNode* deleteDuplicates(ListNode* head) {
+        if (!head || !head->next)
             return head;
-            
-        ListNode *dummyHead, *pre, *cur;
-        dummyHead = new ListNode(0);    //Dummy head
-        pre = dummyHead;
+        
+        ListNode *dummyHead = new ListNode(0);
+        
         dummyHead->next = head;
-        cur = head;
-        while (cur) {
-            while (cur->next && pre->next->val == cur->next->val)
-                cur = cur->next;
-            
-            //No duplicates
-            if (pre->next == cur) {
-                pre = pre->next;
-            } else {
-                pre->next = cur->next;
+        
+        ListNode *pFast, *pSlow;
+        pFast = head;
+        pSlow = dummyHead;
+        
+        while (pFast) {
+            while (pFast->next && pSlow->next->val == pFast->next->val) {
+                pFast = pFast->next;
             }
             
-            cur = cur->next;
+            if (pSlow->next == pFast) {  //pFast->val is distinct
+                pSlow = pSlow->next;
+            } else {    //Skip pFast->val since there are duplicates, but we don't know if next number has duplicates, so pSlow stay unchanged here, just change pSlow->next.
+                pSlow->next = pFast->next;
+            }
+            
+            pFast = pFast->next;
         }
         
-        pre = dummyHead->next;
+        head = dummyHead->next;
+        
         delete dummyHead;
         
-        return pre;
+        return head;
     }
 };

@@ -1,5 +1,5 @@
 /**
- * Definition for binary tree
+ * Definition for a binary tree node.
  * struct TreeNode {
  *     int val;
  *     TreeNode *left;
@@ -9,48 +9,48 @@
  */
 class Solution {
 public:
-    TreeNode *buildTree(vector<int> &preorder, vector<int> &inorder) {
-        //Get the root node from preorder
-        //Find root in inorder
-        //Recursively build left and right trees
-        if (preorder.empty() || inorder.empty()) {
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        if (preorder.empty() || inorder.empty())
             return NULL;
-        } else {
-            TreeNode *root = new TreeNode(0);
-            int preIndex = 0;
-            buildCore(preorder, inorder, root, 0, inorder.size() - 1, preIndex);
-            return root;
-        }
+        
+        if (preorder.size() != inorder.size())
+            throw "Preorder's length must be equal to inorder's length.";
+        
+        TreeNode *root;
+        
+        buildTreeCore(&root, preorder, 0, inorder, 0, inorder.size() - 1);
+        
+        return root;
     }
 
 private:
-    //start, end: the range of inorder array
-    //preIndex: the next node in preorder array to be constructed
-    void buildCore(vector<int> &preorder, vector<int> &inorder, TreeNode *root, int start, int end, int &preIndex) {
-        if (preIndex >= preorder.size() || start > end || !root)
+    void buildTreeCore(TreeNode **p, vector<int> &preorder, int preBegin, vector<int> &inorder, int inBegin, int inEnd) {
+        if (preBegin == preorder.size())
             return;
         
-        root->val = preorder[preIndex++];
-        int index = find(inorder, start, end, root->val);
-        if (-1 != index) {
-            if (start < index) {
-                root->left = new TreeNode(0);
-                buildCore(preorder, inorder, root->left, start, index - 1, preIndex);
-            }
-            
-            if (end > index) {
-                root->right = new TreeNode(0);
-                buildCore(preorder, inorder, root->right, index + 1, end, preIndex);
-            }
-        }
+        if (inBegin > inEnd)
+            throw "Invalid range of inorder sequence";
+        
+        *p = new TreeNode(preorder[preBegin]);
+        
+        int inPartition = find(inorder, inBegin, inEnd, preorder[preBegin]);
+        
+        if (inPartition < 0)
+            throw "Invalid inorder sequence";
+        
+        if (inBegin < inPartition)
+            buildTreeCore(&(*p)->left, preorder, preBegin + 1, inorder, inBegin, inPartition - 1);
+        
+        if (inPartition < inEnd)
+            buildTreeCore(&(*p)->right, preorder, preBegin + (inPartition - inBegin) + 1, inorder, inPartition + 1, inEnd);
     }
     
-    int find(vector<int> &inorder, int start, int end, int target) {
-        for (int i = start; i <= end; i++) {
-            if (i >= inorder.size())
-                break;
+    int find(vector<int> &nums, int begin, int end, int target) {
+        if (begin < 0 || end >= nums.size())
+            return -1;
             
-            if (inorder[i] == target)
+        for (int i = begin; i <= end; i++) {
+            if (nums[i] == target)
                 return i;
         }
         

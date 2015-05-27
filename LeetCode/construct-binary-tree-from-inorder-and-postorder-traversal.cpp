@@ -1,5 +1,5 @@
 /**
- * Definition for binary tree
+ * Definition for a binary tree node.
  * struct TreeNode {
  *     int val;
  *     TreeNode *left;
@@ -9,49 +9,47 @@
  */
 class Solution {
 public:
-    TreeNode *buildTree(vector<int> &inorder, vector<int> &postorder) {
-        //Get the root node from postorder
-        //Find root in inorder
-        //Recursively build left and right trees
-        if (postorder.empty() || inorder.empty()) {
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        if (inorder.empty() || postorder.empty())
             return NULL;
-        } else {
-            TreeNode *root = new TreeNode(0);
-            int postIndex = postorder.size() - 1;
-            buildCore(postorder, inorder, root, 0, inorder.size() - 1, postIndex);
-            return root;
-        }
+        
+        if (inorder.size() != postorder.size())
+            throw "The length of inorder and postorder sequences must be the same.";
+            
+        TreeNode *root = new TreeNode(0);
+        buildTreeCore(root, inorder, 0, inorder.size() - 1, postorder, postorder.size() - 1);
+        
+        return root;
     }
 
 private:
-    //start, end: the range of inorder array
-    //postIndex: the next node in postorder array to be constructed
-    void buildCore(vector<int> &postorder, vector<int> &inorder, TreeNode *root, int start, int end, int &postIndex) {
-        if (postIndex < 0 || start > end || !root)
+    void buildTreeCore(TreeNode *root, vector<int> &inorder, int inBegin, int inEnd, vector<int> &postorder, int postEnd) {
+        if (postEnd < 0)
             return;
         
-        root->val = postorder[postIndex--];
-        int index = find(inorder, start, end, root->val);
-        if (-1 != index) {
-            //Need to build right subtree first, because in postorder, the adjacent nodes to root is right nodes
-            if (end > index) {    //There is right subtree to build
-                root->right = new TreeNode(0);
-                buildCore(postorder, inorder, root->right, index + 1, end, postIndex);
+        root->val = postorder[postEnd];
+        
+        int inPartition = find(inorder, inBegin, inEnd, root->val);
+        
+        if (inPartition >= 0) {
+            if (inBegin < inPartition) {
+                root->left = new TreeNode(0);
+                buildTreeCore(root->left, inorder, inBegin, inPartition - 1, postorder, postEnd - (inEnd - inPartition) - 1);
             }
             
-            if (start < index) {    //There is left subtree to build
-                root->left = new TreeNode(0);
-                buildCore(postorder, inorder, root->left, start, index - 1, postIndex);
+            if (inPartition < inEnd) {
+                root->right = new TreeNode(0);
+                buildTreeCore(root->right, inorder, inPartition + 1, inEnd, postorder, postEnd - 1);
             }
         }
     }
     
-    int find(vector<int> &inorder, int start, int end, int target) {
-        for (int i = start; i <= end; i++) {
-            if (i >= inorder.size())
-                break;
+    int find(vector<int> &nums, int begin, int end, int target) {
+        if (begin < 0 || end >= nums.size())
+            return -1;
             
-            if (inorder[i] == target)
+        for (int i = begin; i <= end; i++) {
+            if (nums[i] == target)
                 return i;
         }
         

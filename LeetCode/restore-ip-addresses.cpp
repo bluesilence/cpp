@@ -1,38 +1,51 @@
 class Solution {
-//1. terminate case should satisfy all the conditions
-//2. cut off should at least cover the out of range case
-//3. move should satisfy all the necessary conditions
 public:
     vector<string> restoreIpAddresses(string s) {
-        vector<int> curPath;    //Store the start and end index of a number
-        vector<string> allPath;
-        restoreCore(s, 0, curPath, allPath);
+        vector<string> results;
         
-        return allPath;
+        if (s.size() < 4)
+            return results;
+        
+        restoreIpCore(results, "", s, 4);
+        
+        return results;
     }
 
 private:
-    void restoreCore(string& s, int curIdx, vector<int>& curPath, vector<string>& allPath) {
-        if(curPath.size() == 4 && curIdx == s.size()) {
-            string tmp = s;
-            for(int i = curPath.size() - 2; i >= 0; i--)    //For all the numbers except the last one
-                tmp.insert(curPath[i] + 1, 1, '.'); //insert '.' at index curPath[i] + 1
-                
-            allPath.push_back(tmp);
+    void restoreIpCore(vector<string> &results, string result, string s, int n) {
+        if (s.size() == 0 && n == 0) {
+            results.push_back(result);
             return;
         }
         
-        if(curPath.size() >= 4 || curIdx >= s.size())
-            return;
+        for (int i = 1; i <= 3 && i <= s.size(); i++) {  //The digits of this ip number
+            if (i + 3 * (n-1) < s.size())   //pruning for next recursion
+                continue;
+            
+            string ipStr = s.substr(0, i);
+            if (isValidIpStr(ipStr)) {
+                string ipStrWithDot = n > 1 ? ipStr + "." : ipStr;
+                restoreIpCore(results, result + ipStrWithDot, s.substr(i, s.size() - i), n - 1);
+            }
+        }
+    }
+    
+    bool isValidIpStr(string ipStr) {
+        int ip = 0;
         
-        int curNum = s[curIdx] - '0';
-        int end = curIdx;
-        do {
-            curPath.push_back(end);
-            end++;
-            restoreCore(s, end, curPath, allPath);
-            curPath.pop_back();
-            curNum = curNum * 10 + s[end] - '0';
-        } while (end < s.size() && curNum <= 255 && s[curIdx] != '0');//The first digit can be 0, but there should be no number after 0
+        if (ipStr[0] == '0' && ipStr.size() > 1)    //0 can only appear alone if it's the first number in the ipStr
+            return false;
+            
+        for (int i = 0; i < ipStr.size(); i++) {
+            if (ipStr[i] > '9' || ipStr[i] < '0')
+                return false;
+                
+            ip *= 10;
+            ip += ipStr[i] - '0';
+            if (ip > 255)
+                return false;
+        }
+        
+        return true;
     }
 };

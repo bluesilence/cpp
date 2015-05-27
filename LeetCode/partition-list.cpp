@@ -8,33 +8,38 @@
  */
 class Solution {
 public:
-    ListNode *partition(ListNode *head, int x) {
-        if(!head || !head->next)
+    ListNode* partition(ListNode* head, int x) {
+        if (!head || !head->next)
             return head;
-
-        ListNode *smallerHead = new ListNode(0), *smallerTail = smallerHead;
-        ListNode *biggerHead = new ListNode(0), *biggerTail = biggerHead;
-        ListNode *cur = head;
-
-        while(cur) {
-            if(cur->val < x) {
-                smallerTail -> next = cur;
-                cur = cur -> next;
-                smallerTail = smallerTail -> next;
-                smallerTail -> next = NULL;
-            }else{
-                biggerTail -> next = cur;
-                cur = cur -> next;
-                biggerTail = biggerTail -> next;
-                biggerTail -> next = NULL;
+        
+        ListNode *dummyHeadLeft = new ListNode(0);
+        ListNode *dummyHeadRight = new ListNode(0);
+        
+        ListNode *p = head;
+        ListNode *pLeft = dummyHeadLeft, *pRight = dummyHeadRight;
+        ListNode *pNext = NULL;
+        
+        while (p) {
+            pNext = p->next;
+            if (p->val < x) {
+                pLeft->next = p;
+                pLeft = p;
+                pLeft->next = NULL; //To avoid circular list between pLeft and pRight
+            } else {
+                pRight->next = p;
+                pRight = p;
+                pRight->next = NULL; //Same as above
             }
+            
+            p = pNext;
         }
         
-        smallerTail->next = biggerHead->next;
-        head = smallerHead->next;
+        pLeft->next = dummyHeadRight->next;
         
-        delete smallerHead;
-        delete biggerHead;
+        head = dummyHeadLeft->next;
+        
+        delete dummyHeadLeft;
+        delete dummyHeadRight;
         
         return head;
     }

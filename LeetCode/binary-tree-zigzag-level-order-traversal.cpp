@@ -1,5 +1,5 @@
 /**
- * Definition for binary tree
+ * Definition for a binary tree node.
  * struct TreeNode {
  *     int val;
  *     TreeNode *left;
@@ -9,53 +9,50 @@
  */
 class Solution {
 public:
-    vector<vector<int> > zigzagLevelOrder(TreeNode *root) {
-        //Level-order traverse + a flag to indicate whether to reverse sequence within a level
+    vector<vector<int>> zigzagLevelOrder(TreeNode* root) {
+        //Similar to level order traversal. Use a flag to indicate traversing left to right or right to left.
         vector<vector<int>> results;
         
         if (!root)
             return results;
+        
+        vector<int> result;
+        TreeNode *dummy = new TreeNode(0);
+        
+        queue<TreeNode*> q;
+        q.push(root);
+        q.push(dummy);
+        
+        TreeNode *tmp;
+        bool isLeftToRight = true; //The order to push children of the nodes of current level
+        while (!q.empty()) {
+            tmp = q.front();
+            q.pop();
             
-        q1.push(root);
-        while (!q1.empty() || !q2.empty()) {
-            vector<int> level;
-            if (!q1.empty()) {
-                while (!q1.empty()) {
-                    TreeNode *tmp = q1.front();
-                    q1.pop();
-                    level.push_back(tmp->val);
-                    if (tmp->left)
-                        q2.push(tmp->left);
+            if (tmp == dummy) { //Enter next level
+                if (!q.empty()) //Is there any node at next level
+                    q.push(dummy);  //The end of children of current level
                     
-                    if (tmp->right)
-                        q2.push(tmp->right);
-                }
-            } else {
-                while (!q2.empty()) {
-                    TreeNode *tmp = q2.front();
-                    q2.pop();
-                    level.push_back(tmp->val);
-                    if (tmp->left)
-                        q1.push(tmp->left);
-                    
-                    if (tmp->right)
-                        q1.push(tmp->right);
-                }
+                if (!isLeftToRight)
+                    reverse(result.begin(), result.end());
+                
+                results.push_back(result);
+                result.clear();
+                
+                isLeftToRight = !isLeftToRight;
+                
+                continue;
             }
+            
+            result.push_back(tmp->val);
+            
+            if (tmp->left)
+                q.push(tmp->left);
                 
-            if (flag) {
-                reverse(level.begin(), level.end());
-            }
-                
-            flag = !flag;
-                
-            results.push_back(level);
+            if (tmp->right)
+                q.push(tmp->right);
         }
         
         return results;
     }
-
-private:
-    queue<TreeNode*> q1, q2;
-    bool flag;
 };

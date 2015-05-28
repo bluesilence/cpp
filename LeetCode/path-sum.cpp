@@ -1,5 +1,5 @@
 /**
- * Definition for binary tree
+ * Definition for a binary tree node.
  * struct TreeNode {
  *     int val;
  *     TreeNode *left;
@@ -9,15 +9,14 @@
  */
 class Solution {
 public:
-    bool hasPathSum(TreeNode *root, int sum) {
+    bool hasPathSum(TreeNode* root, int sum) {
         if (!root)
             return false;
         
-        //Only when the node is leaf shall we check if the sum is matched
-        if (!root->left && !root->right && root->val == sum)
+        sum -= root->val;
+        if (!root->left && !root->right && sum == 0)
             return true;
             
-        sum -= root->val;
         return hasPathSum(root->left, sum) || hasPathSum(root->right, sum);
     }
 };

@@ -1,5 +1,5 @@
 /**
- * Definition for binary tree
+ * Definition for a binary tree node.
  * struct TreeNode {
  *     int val;
  *     TreeNode *left;
@@ -9,31 +9,33 @@
  */
 class Solution {
 public:
-    TreeNode *sortedArrayToBST(vector<int> &num) {
-        if (num.empty())
+    TreeNode* sortedArrayToBST(vector<int>& nums) {
+        if (nums.empty())
             return NULL;
-        
+            
         TreeNode *root = new TreeNode(0);
-        buildBST(root, num, 0, num.size() - 1);
+        
+        transform(root, nums, 0, nums.size() - 1);
         
         return root;
     }
-    
+
 private:
-    void buildBST(TreeNode *root, vector<int> &num, int start, int end) {
-        if (!root || start > end)
+    void transform(TreeNode *p, vector<int> &nums, int begin, int end) {
+        if (begin > end || begin < 0 || end >= nums.size())
             return;
         
-        int mid = (start + end) / 2;
-        root->val = num[mid];
-        if (mid > start) {
-            root->left = new TreeNode(0);
-            buildBST(root->left, num, start, mid - 1);
+        int mid = (begin + end) / 2;
+        p->val = nums[mid];
+        
+        if (begin < mid) {
+            p->left = new TreeNode(0);
+            transform(p->left, nums, begin, mid - 1);
         }
         
         if (mid < end) {
-            root->right = new TreeNode(0);
-            buildBST(root->right, num, mid + 1, end);
+            p->right = new TreeNode(0);
+            transform(p->right, nums, mid + 1, end);
         }
     }
 };

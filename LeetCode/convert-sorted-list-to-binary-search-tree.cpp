@@ -7,7 +7,7 @@
  * };
  */
 /**
- * Definition for binary tree
+ * Definition for a binary tree node.
  * struct TreeNode {
  *     int val;
  *     TreeNode *left;
@@ -17,31 +17,51 @@
  */
 class Solution {
 public:
-    TreeNode *sortedListToBST(ListNode *head) {
+    TreeNode* sortedListToBST(ListNode* head) {
         if (!head)
             return NULL;
-        if (!head->next)
-            return new TreeNode(head->val);
         
-        //Find the middle node as root of tree
-        ListNode *pre, *slow, *fast;
-        pre = slow = fast = head;
-        while (fast && fast->next) {
-            pre = slow;
-            slow = slow->next;
-            fast = fast->next->next;
-        }
+        TreeNode *root = new TreeNode(0);
+        ListNode *dummyHead = new ListNode(0);
+        dummyHead->next = head;
         
-        //Cut list from slow
-        ListNode *right = slow->next;
-        ListNode *left = head;
-        pre->next = NULL;
-        
-        //Connect left and right subtree root to current root
-        TreeNode* root = new TreeNode(slow->val);
-        root->left = sortedListToBST(left);
-        root->right = sortedListToBST(right);
+        transform(dummyHead, root);
         
         return root;
+    }
+
+private:
+    void transform(ListNode *preHead, TreeNode *root) {
+        //To split left list, we need the pointer before mid
+        ListNode *preMid = findPreMid(preHead);
+        ListNode *mid = preMid->next;
+        
+        root->val = mid->val;
+        
+        if (mid->next) {
+            root->right = new TreeNode(0);
+            transform(mid, root->right);    //mid is the preHead of right list
+        }
+        
+        if (preHead != preMid) {
+            root->left = new TreeNode(0);
+            preMid->next = NULL;    //Split left list
+            transform(preHead, root->left);
+        }
+    }
+    
+    ListNode *findPreMid(ListNode *preHead) {
+        if (!preHead)
+            return NULL;
+        
+        ListNode *pSlow, *pFast;
+        pSlow = pFast = preHead;
+        
+        while (pFast && pFast->next && pFast->next->next) {
+            pFast = pFast->next->next;
+            pSlow = pSlow->next;
+        }
+        
+        return pSlow;
     }
 };

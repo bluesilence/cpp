@@ -9,52 +9,40 @@
 class Solution {
 public:
     void connect(TreeLinkNode *root) {
+        //Level order traversal. Preserve the last node of the same level.
+        //When visiting the current node, set it to be the next node of last node.
+        //When reaching the end of current level, set the last node's next node to be NULL.
         if (!root)
             return;
-            
-        //Level traverse
-        queue<TreeLinkNode*> q1, q2;
-        q1.push(root);
         
-        TreeLinkNode* pre = NULL, *curr = NULL;
-        while (!q1.empty() || !q2.empty()) {
-            pre = NULL;
-            if (q1.empty()) {
-                while (!q2.empty()) {
-                    curr = q2.front();
-                    if (curr->left)
-                        q1.push(curr->left);
-                    
-                    if (curr->right)
-                        q1.push(curr->right);
-                    
-                    q2.pop();
-                    if (pre) {
-                        pre->next = curr;
-                    }
-                
-                    pre = curr;
-                }
-            } else {
-                 while (!q1.empty()) {
-                    curr = q1.front();
-                    if (curr->left)
-                        q2.push(curr->left);
-                    
-                    if (curr->right)
-                        q2.push(curr->right);
-                    
-                    q1.pop();
-                    if (pre) {
-                        pre->next = curr;
-                    }
-                
-                    pre = curr;
-                }
+        TreeLinkNode *pre = NULL;
+        TreeLinkNode *p = NULL;
+        
+        queue<TreeLinkNode *> q;
+        
+        q.push(root);
+        q.push(NULL);
+        
+        while (!q.empty()) {
+            p = q.front();
+            q.pop();
+            
+            if (pre != NULL) {
+                pre->next = p;
             }
+            
+            pre = p;    //Including NULL, so that the pre to next level is set to p from NULL, and L32 could be reached
+            
+            if (p != NULL) {
+                if (p->left)
+                    q.push(p->left);
                 
-            if (pre)
-                pre->next = NULL;
+                if (p->right)
+                    q.push(p->right);
+            } else {
+                if (!q.empty()) //There are more levels to be visited in the queue
+                    q.push(NULL);
+            }
         }
     }
 };

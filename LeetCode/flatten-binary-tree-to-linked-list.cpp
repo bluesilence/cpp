@@ -1,5 +1,5 @@
 /**
- * Definition for binary tree
+ * Definition for a binary tree node.
  * struct TreeNode {
  *     int val;
  *     TreeNode *left;
@@ -9,27 +9,36 @@
  */
 class Solution {
 public:
-    void flatten(TreeNode *root) {
+    void flatten(TreeNode* root) {
+        //Flatten the tree using pre-order traversal
         if (!root || !root->left && !root->right)
             return;
         
-        TreeNode *pre = NULL;
-        flatternCore(root, pre);
+        flattenCore(root);
     }
-    
+
 private:
-    void flatternCore(TreeNode *root, TreeNode *& pre) {
+    TreeNode *flattenCore(TreeNode *root) {
         if (!root)
-            return;
-            
-        if (pre)
-            pre->right = root;
+            return NULL;
         
-        pre = root;
-        TreeNode *right = root->right;
-        flatternCore(root->left, pre);
-        flatternCore(right, pre);
+        if (!root->left && !root->right)
+            return root;
+        
+        TreeNode *pLeft = root->left;
+        TreeNode *pRight = root->right;
         
         root->left = NULL;
+        
+        root->right = flattenCore(pLeft);
+        
+        TreeNode *p = root;
+        while (p && p->right) {
+            p = p->right;
+        }
+        
+        p->right = flattenCore(pRight);
+        
+        return root;
     }
 };

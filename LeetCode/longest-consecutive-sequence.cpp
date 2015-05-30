@@ -1,41 +1,26 @@
 class Solution {
 public:
-    int longestConsecutive(vector<int> &num) {
-        //Use a set to store all the numbers
-        //Iterate the set and find each element's neighborhood range
-        //Update max range and delete visited elements along each iteration
-        set<int> numSet;
-        for (int i = 0; i < num.size(); i++) {
-            numSet.insert(num[i]);
+    int longestConsecutive(vector<int>& nums) {
+        if (nums.empty())
+            return 0;
+        
+        sort(nums.begin(), nums.end());
+        
+        int maxLen = 1;
+        int tmpLen = 1;
+        
+        for (int i = 1; i < nums.size(); i++) {
+            if (nums[i] == nums[i-1]) {
+                continue;   //Skip duplicate elements
+            } else if (abs(nums[i] - nums[i-1]) == 1) {
+                tmpLen++;
+                if (tmpLen > maxLen)
+                    maxLen = tmpLen;
+            } else {
+                tmpLen = 1;
+            }
         }
         
-        set<int>::iterator it = numSet.begin();
-        int globalMax = 0, iterMax;
-        
-        while (it != numSet.end()) {
-            set<int>::iterator cur = it;
-            int n = *it, max = n + 1, min = n - 1;
-            iterMax = 1;
-            
-            set<int>::iterator tmpIter;
-            while ((tmpIter = numSet.find(max)) != numSet.end()) {
-                numSet.erase(tmpIter);
-                max++;
-                iterMax++;
-            }
-            
-            while ((tmpIter = numSet.find(min)) != numSet.end()) {
-                numSet.erase(tmpIter);
-                min--;
-                iterMax++;
-            }
-            
-            it++;
-            numSet.erase(cur);
-            if (iterMax > globalMax)
-                globalMax = iterMax;
-        }
-        
-        return globalMax;
+        return maxLen;
     }
 };

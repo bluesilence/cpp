@@ -5,24 +5,31 @@ public:
         if (board.empty())
             return;
         
-        length = board.size(), width = board[0].size();
-        if (0 == length || 0 == width)
+        height = board.size();
+        width = board[0].size();
+        
+        if (height < 3 || width < 3)
             return;
+        
+        //Clear last queue
+        while (!q.empty()) {
+            q.pop();
+        }
         
         //Mark regions that are not surrounded starting from 'O's at the first/last row
         for (int i = 0; i < width; i++) {
             BFSCheckAndMarkSurroundedRegionStartedFrom(0, i, board);
-            BFSCheckAndMarkSurroundedRegionStartedFrom(length - 1, i, board);
+            BFSCheckAndMarkSurroundedRegionStartedFrom(height - 1, i, board);
         }
         
         //Mark regions that are not surrounded starting from 'O's at the first/last column
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < height; i++) {
             BFSCheckAndMarkSurroundedRegionStartedFrom(i, 0, board);
             BFSCheckAndMarkSurroundedRegionStartedFrom(i, width - 1, board);
         }
         
         //Flip all 'O's except those that are not surrounded
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 board[i][j] = board[i][j] == 'Z' ? 'O' : 'X';
             }
@@ -31,11 +38,12 @@ public:
 
 private:
     queue<int> q;
-    int length, width;
+    int height;
+    int width;
     
     //Mark surrounded region with 'Z'
     void checkAndMark(int x, int y, vector<vector<char>> &board) {
-        if (x >= 0 && x < length && y >= 0 && y < width && board[x][y] == 'O') {
+        if (x >= 0 && x < height && y >= 0 && y < width && board[x][y] == 'O') {
             board[x][y] = 'Z';
             q.push(x * width + y);
         }    
@@ -47,7 +55,8 @@ private:
             int p = q.front();
             q.pop();
             
-            int px = p / width, py = p % width;
+            int px = p / width;
+            int py = p % width;
             
             //Check all 4 adjacent positions
             checkAndMark(px - 1, py, board);

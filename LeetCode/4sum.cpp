@@ -1,51 +1,50 @@
 class Solution {
 public:
-    vector<vector<int> > fourSum(vector<int> &num, int target) {
-        // Start typing your C/C++ solution below
-        // DO NOT write int main() function
-        int nSize = num.size();
-        vector<vector<int> > results;
-        if (nSize < 4)
+    vector<vector<int>> fourSum(vector<int>& nums, int target) {
+        vector<vector<int>> results;
+        const int size = nums.size();
+        if (size < 4)
             return results;
         
-        sort(num.begin(), num.end());
+        sort(nums.begin(), nums.end());
+        
         vector<int> result(4);
         set<string> uniqueResults;
+        long long sum = target;
         
-        for (int i = 0; i < nSize - 3; i++) {
-            result[0] = num[i];
-            for (int j = i + 1; j < nSize - 2; j++) {
-                result[1] = num[j];
-                int k = j + 1;
-                int m = nSize - 1;
-                int sum = target - num[i] - num[j];
-                while(k < m) {
-                    int tmp = num[k] + num[m];
-                    if (sum == tmp) {
-                        string str;
-                        str += num[i];
-                        str += num[j];
-                        str += num[k];
-                        str += num[m];
-                        if (uniqueResults.find(str) == uniqueResults.end()) {
-                            uniqueResults.insert(str);
-                            result[2] = num[k];
-                            result[3] = num[m];
+        for (int i = 0; i + 3 < size; i++) {
+            result[0] = nums[i];
+            for (int j = i + 1; j + 2 < size; j++) {
+                result[1] = nums[j];
+                int begin = j + 1;
+                int end = size - 1;
+                sum = target - result[0] - result[1];
+                while (begin < end) {
+                    long long tmpSum = nums[begin] + nums[end];
+                    if (tmpSum == sum) {
+                        string s;
+                        s += nums[i];
+                        s += nums[j];
+                        s += nums[begin];
+                        s += nums[end];
+                        if (uniqueResults.find(s) == uniqueResults.end()) {
+                            uniqueResults.insert(s);
+                            result[2] = nums[begin];
+                            result[3] = nums[end];
                             results.push_back(result);
                         }
                         
-                        k++;
-                        m--;
-                    }
-                    else if(sum > tmp) {
-                        k++;
+                        begin++;
+                        end--;
+                    } else if (tmpSum < sum) {
+                        begin++;
                     } else {
-                        m--;
+                        end--;
                     }
                 }
             }
         }
-
+        
         return results;
     }
 };

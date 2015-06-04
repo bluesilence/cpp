@@ -1,43 +1,48 @@
 class Solution {
 public:
-    void nextPermutation(vector<int> &num) {
-        //Find the first number backwards which is greater than its lower adjacent number
-        int i = 0;
-        for (i = num.size() - 2; i >= 0 && num[i] >= num[i + 1]; i--);
+    void nextPermutation(vector<int>& nums) {
+        if (nums.size() < 2)
+            return;
         
-        if (i < 0) {    //No possible arrangement, rearrange to the lowest possible order
-            reverse(num.begin(), num.end() - 1);
-        } else {    //num[i] < num[i + 1]
-            int j = i + 2;
-            //Find the lowest number after num[i] which is greater than num[i]
-            while (j < num.size() && num[j] > num[i]) {
-                j++;
-            }
+        //Find the lowest digit i which is smaller than the lower digit j adjacent to it
+        //This means the digits after j are in descending order, so that nums[j...nums.size()-1] forms the largest permutation
+        int i;
+        for (i = nums.size() - 2; i >= 0 && nums[i] >= nums[i+1]; i--);
+        
+        if (i < 0) {    //No possible arrangement, nums are already in the largest permutation
+            reverse(nums, 0, nums.size() - 1);
+        } else {
+            //Find the lowest digit k where nums[k] > nums[i]
+            //so that (nums[k], nums[j], ... , num[i], ..., nums[nums.size()-1]) is larger than (nums[i], nums[j], ..., nums[k], ..., nums[nums.size()-1])
+            //since the original (nums[j], ..., nums[k], ..., nums[nums.size()-1]) is in descending order
+            //after swap nums[i] and nums[j], (nums[nums.size()-1], ..., nums[i], ... nums[j]) is the smallest permutation after nums[k].
+            int k;
+            for (k = nums.size() - 1; k > i && nums[k] <= nums[i]; k--);
             
-            j--;
+            swap(nums, i, k);
             
-            swap(num, i, j);
-            
-            //Because i is the end of the descending sequence num[i + 1] ... num.end() - 1, this reverse will make num[i + 1]...num.end() - 1 smallest
-            reverse(num.begin() + i + 1, num.end() - 1);
+            reverse(nums, i + 1, nums.size() - 1);
         }
     }
 
 private:
-    void reverse(vector<int>::iterator i1, vector<int>::iterator i2) {
-        while (i1 < i2) {
-            *i1 ^= *i2;
-            *i2 ^= *i1;
-            *i1 ^= *i2;
+    void swap(vector<int> &nums, int index1, int index2) {
+        if (index1 < 0 || index2 < 0 || index1 >= nums.size() || index2 >= nums.size())
+            return;
             
-            i1++;
-            i2--;
-        }
+        int tmp = nums[index1];
+        nums[index1] = nums[index2];
+        nums[index2] = tmp;
     }
     
-    void swap(vector<int> &num, int i, int j) {
-        num[i] ^= num[j];
-        num[j] ^= num[i];
-        num[i] ^= num[j];
+    void reverse(vector<int> &nums, int begin, int end) {
+        if (begin < 0 || end >= nums.size() || begin >= end)
+            return;
+        
+        while (begin < end) {
+            swap(nums, begin, end);
+            begin++;
+            end--;
+        }
     }
 };

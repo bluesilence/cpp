@@ -1,73 +1,104 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
 class Solution {
 public:
-    ListNode *reverseKGroup(ListNode *head, int k) {
-        if (k < 2 || !head || !head->next)  //No need to reverse
+    ListNode* reverseKGroup(ListNode* head, int k) {
+        //Cut list into k-group
+        //Reverse each sublist recursively
+        //Stitch sublist back
+        if (k < 2)
             return head;
+        
+        ListNode *dummyHead = new ListNode(0);
+        dummyHead->next = head;
+        
+        ListNode *p = dummyHead;
+        ListNode *q;
+        ListNode *begin;
+        ListNode *end;
+        
+        while (p && p->next && p->next->next) {
+            begin = p->next;
+            end = begin;
             
-        //Use 2 pointers, 1 points to the begin of a k-node group, 1 points to the end
-        ListNode *begin, *end;
-        ListNode *pre, *post;
-		    ListNode *dummyHead = new ListNode(0);
-        
-        begin = end = head;
-        pre = dummyHead;
-        pre->next = head;
-        
-        bool hasGroup = true;
-        while (begin && hasGroup) {
             for (int i = 1; i < k; i++) {
                 if (end && end->next) {
                     end = end->next;
                 } else {
-                    //If there is no more valid group, break the loop and return head
-                    hasGroup = false;
                     break;
                 }
             }
             
-            if (hasGroup) {
-                if (begin == head) {    //First group
-                    head = end;
-                }
-                
-                post = end->next;
-                
-                //Reverse the sub list of k nodes and stitch it back to the main list
-                reverse(begin, end, pre, post);
-                
-                //Move the pointers to the next group
-                pre = begin;
-                end = post;
-                begin = end;
+            q = end->next;
+            end->next = NULL;   //Cut the k nodes off the list
+            
+            int len = getLen(begin);
+            if (k > len) {  //Not enough nodes, do not reverse
+                break;
             }
+            
+            reverseList(&begin, &end);
+            
+            p->next = begin;
+            end->next = q;
+            p = end;    //pre to next k-group
         }
+        
+        head = dummyHead->next;
         
         delete dummyHead;
         
         return head;
     }
-    
-private:
-    void reverse(ListNode *begin, ListNode *end, ListNode *pre, ListNode *post) {
-        if (begin == end || !begin || !end)
+
+    void reverseList(ListNode **begin, ListNode **end) {
+        ListNode *head = *begin;
+        ListNode *tail = *end;
+        
+        if (head == tail)
             return;
         
-        ListNode *p = begin;
-        stack<ListNode*> s;
-        while (p && p != end) {
-            s.push(p);
+        ListNode *dummyHead = new ListNode(0);
+        dummyHead->next = head;
+        
+        ListNode *pre = dummyHead;
+        ListNode *cur = head;
+        ListNode *next;
+        
+        while (cur && cur->next) {
+            next = cur->next;
+            
+            cur->next = pre;
+            
+            pre = cur;
+            cur = next;
+        }
+        
+        cur->next = pre;    //Last node
+        
+        *end = *begin;
+        (*end)->next = NULL;
+        
+        *begin = cur;
+        
+        delete dummyHead;
+    }
+
+private:
+    int getLen(ListNode *head) {
+        int len = 0;
+        ListNode *p = head;
+        while (p) {
+            len++;
             p = p->next;
         }
         
-        p = end;
-        while (!s.empty()) {
-            p->next = s.top();
-            s.pop();
-            p = p->next;
-        }
-        
-        //Stitch the reversed sub list back into the main list
-        pre->next = end;
-        begin->next = post;
+        return len;
     }
 };

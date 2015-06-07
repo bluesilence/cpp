@@ -1,52 +1,62 @@
 class Solution {
 public:
-    bool isValidSudoku(vector<vector<char> > &board) {
-        vector<int> counts(9, 0);
+    bool isValidSudoku(vector<vector<char>>& board) {
+        if (board.empty() || board[0].empty())
+            return false;
         
+        const int height = board.size();
+        const int width = board[0].size();
+        
+        //numbers start from 1, not 0
+        vector<bool> occurred(height + 1, false);
+        
+        //Check rows
+        for (int i = 0; i < height; i++) {
+            fill(occurred.begin(), occurred.end(), false);
+            for (int j = 0; j < width; j++) {
+                if (board[i][j] != '.') {
+                    int digit = board[i][j] - '0';
+                    if (occurred[digit] == true) {
+                        return false;
+                    } else {
+                        occurred[digit] = true;
+                    }
+                }
+            }
+        }
+        
+        //Check cols
+        for (int j = 0; j < width; j++) {
+            fill(occurred.begin(), occurred.end(), false);
+            for (int i = 0; i < height; i++) {
+                if (board[i][j] != '.') {
+                    int digit = board[i][j] - '0';
+                    if (occurred[digit] == true) {
+                        return false;
+                    } else {
+                        occurred[digit] = true;
+                    }
+                }
+            }
+        }
+        
+        //Check blocks
         for (int i = 0; i < 9; i++) {
-            counts.assign(9, 0);
+            fill(occurred.begin(), occurred.end(), false);
+            int rowBegin = 3 * (i / 3);
+            int rowEnd = rowBegin + 2;
+            int colBegin = 3 * (i % 3);
+            int colEnd = colBegin + 2;
             
-            //Validate row
-            for (int j = 0; j < 9; j++) {
-                char ch = board[i][j];
-                if (ch != '.') {
-                    if (counts[ch - '1'] > 0)
-                        return false;
-                    else
-                        counts[ch - '1']++;
-                }
-            }
-        }
-        
-        for (int j = 0; j < board[0].size(); j++) {
-            counts.assign(9, 0);
-            
-            //Validate column
-            for (int i = 0; i < board.size(); i++) {
-                char ch = board[i][j];
-                if (ch != '.') {
-                    counts[ch - '1']++;
-                    if (counts[ch - '1'] > 1)
-                        return false;
-                }
-            }
-        }
-        
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                counts.assign(9, 0);
-                
-                int row, col;
-                for (int k = 0; k < 9; k++) {
-                    row = k / 3 + 3 * i;
-                    col = k % 3 + 3 * j;
-                    
-                    //Validate cubicle
-                    char ch = board[row][col];
-                    if (ch != '.') {
-                        counts[ch - '1']++;
-                        if (counts[ch - '1'] > 1)
+            for (int i = rowBegin; i <= rowEnd; i++) {
+                for (int j = colBegin; j <= colEnd; j++) {
+                    if (board[i][j] != '.') {
+                        int digit = board[i][j] - '0';
+                        if (occurred[digit] == true) {
                             return false;
+                        } else {
+                            occurred[digit] = true;
+                        }
                     }
                 }
             }

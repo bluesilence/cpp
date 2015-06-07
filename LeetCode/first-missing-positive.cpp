@@ -1,32 +1,37 @@
 class Solution {
 public:
-    int firstMissingPositive(int A[], int n) {
-        if (!A || n <= 0)
+    int firstMissingPositive(vector<int> &A) {
+        if (A.empty())
             return 1;
         
-        int max = getMax(A, n);
+        int max = getMax(A);
+        int *positiveNumbers = new int[max + 1];
+        memset(positiveNumbers, 0, sizeof(int) * (max + 1));
         
-        //Put each positive integer i at subscript i of the array
-        vector<int> positions(max+1, -1);
-        for (int i = 0; i < n; i++) {
-            if (A[i] > 0)
-                positions[A[i]] = A[i];
+        for (int i = 0; i < A.size(); i++) {
+            if (A[i] > 0) {
+                positiveNumbers[A[i]] = A[i];
+            }
         }
         
         for (int i = 1; i <= max; i++) {
-            if (positions[i] != i)
+            if (positiveNumbers[i] != i) {
                 return i;
+            }
         }
         
-        return max+1;
+        delete positiveNumbers;
+        
+        return max + 1; //All positive numbers in A are continous. The missing integer is the next positive numbers of max
     }
-
+    
 private:
-    int getMax(int A[], int n) {
-        int max = 0;
-        for (int i = 0; i < n; i++) {
-            if (A[i] > max)
+    int getMax(vector<int> &A) {
+        int max = A[0];
+        for (int i = 1; i < A.size(); i++) {
+            if (A[i] > max) {
                 max = A[i];
+            }
         }
         
         return max;

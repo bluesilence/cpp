@@ -1,56 +1,64 @@
 class Solution {
 public:
-    void solveSudoku(vector<vector<char> > &board) {
-        if (board.size() != board[0].size() || board.size() <= 0 || board[0].size() <= 0)
+    void solveSudoku(vector<vector<char>>& board) {
+        if (board.empty() || board[0].empty() || board.size() != board[0].size())
             return;
         
         solveSudokuCore(board);
     }
 
 private:
-    bool solveSudokuCore(vector<vector<char> > &board) {
-        for (int row = 0; row < 9; row++) {
-            for (int col = 0; col < 9; col++) {
-                if ('.' == board[row][col]) {
-                    for (int i = 1; i <= 9; i++) {
-                        board[row][col] = '0' + i;
+    bool solveSudokuCore(vector<vector<char>> &board) {
+        for (int i = 0; i < board.size(); i++) {
+            for (int j = 0; j < board[0].size(); j++) {
+                if (board[i][j] == '.') {
+                    for (int num = 1; num <= 9; num++) {
+                        board[i][j] = num + '0';
                         
-                        if (isValid(board, row, col)) {
-                            if (solveSudokuCore(board)) {
+                        if (isValid(board, i, j)) {
+                            if (solveSudokuCore(board))
                                 return true;
-                            }
                         }
-                        
-                        board[row][col] = '.';
                     }
                     
-                    return false;
+                    board[i][j] = '.';  //Cancel this step
+                    
+                    return false;   //No possible fill for board[i][j]
                 }
             }
         }
         
+        //All positions are filled
         return true;
     }
     
-    bool isValid(vector<vector<char> > &board, const int row, const int col) {
-        //Check row
-        for (int i = 0; i < 9; i++) {
-            if (i != col && board[row][i] == board[row][col])
+    bool isValid(vector<vector<char>> &board, const int i, const int j) {
+        if (i < 0 || i > board.size() || j < 0 || j > board[0].size())
+            return false;
+        
+        const int height = board.size();
+        const int width = board[0].size();
+        
+        for (int row = 0; row < height; row++) {
+            if (i != row && board[row][j] == board[i][j])
                 return false;
         }
         
-        //Check col
-        for (int i = 0; i < 9; i++) {
-            if (i != row && board[i][col] == board[row][col])
+        for (int col = 0; col < width; col++) {
+            if (j != col && board[i][col] == board[i][j])
                 return false;
         }
         
-        //Check block
-        const int blockRow = row / 3;
-        const int blockCol = col / 3;
-        for (int i = blockRow*3; i < blockRow*3 + 3; i++) {
-            for (int j = blockCol*3; j < blockCol*3 + 3; j++) {
-                if (i != row && j != col && board[i][j] == board[row][col])
+        //block number starts from 0
+        int blockRow = i / 3;
+        int blockCol = j / 3;
+        
+        int blockRowBegin = 3 * blockRow;
+        int blockColBegin = 3 * blockCol;
+        
+        for (int row = blockRowBegin; row < blockRowBegin + 3; row++) {
+            for (int col = blockColBegin; col < blockColBegin + 3; col++) {
+                if (i != row && j != col && board[row][col] == board[i][j])
                     return false;
             }
         }

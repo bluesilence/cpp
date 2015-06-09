@@ -1,17 +1,17 @@
 class Solution {
 public:
-    int jump(int A[], int n) {
-        int minJumps = 0;
-        int currentMaxReachablePosition = 0;
+    int jump(vector<int>& nums) {
         int currentReachablePosition = 0;
+        int currentMaxReachablePosition = 0;
+        int minJumps = 0;
         
-        for(int i = 0; i < n; i++) {
-            if(currentReachablePosition < i && currentMaxReachablePosition >= i) {   //Cannot reach position i unless give it another jump
+        for (int i = 0; i < nums.size(); i++) {
+            if (currentReachablePosition < i && currentMaxReachablePosition >= i) {
                 minJumps++;
                 currentReachablePosition = currentMaxReachablePosition;
             }
             
-            currentMaxReachablePosition = max(currentMaxReachablePosition, A[i] + i);
+            currentMaxReachablePosition = max(currentMaxReachablePosition, nums[i] + i);
         }
         
         return minJumps;

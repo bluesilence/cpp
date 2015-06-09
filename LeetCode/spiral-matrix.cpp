@@ -1,10 +1,3 @@
-// LeetCode.cpp : 定义控制台应用程序的入口点。
-//
-
-#include "stdafx.h";
-#include <vector>;
-using namespace std;
-
 class Solution {
 public:
     vector<int> spiralOrder(vector<vector<int> > &matrix) {
@@ -44,7 +37,8 @@ private:
     }
     
     void scanRightToLeft(vector<vector<int> > &matrix, vector<int> &result, int round) {
-		if( round - 1 < matrix.size() - round ) {
+        //There are more cols in currrent round to traverse, aka. matrix.size() - 2 * (round - 1) > 1
+		if (round - 1 < matrix.size() - round) {
 			int startCol = matrix[0].size() - round - 1;
 			int endCol = round - 1;
 			for(int i = startCol; i >= endCol; i-- ) {
@@ -62,7 +56,8 @@ private:
     }
     
     void scanBottomToTop(vector<vector<int> > &matrix, vector<int> &result, int round) {
-		if( round - 1 < matrix[0].size() - round ) {
+        //There are more rows in currrent round to traverse, aka. matrix[0].size() - 2 * (round - 1) > 1
+		if (round - 1 < matrix[0].size() - round) {
 			int startRow = matrix.size() - round - 1;
 			int endRow = round;
 			for(int i = startRow; i >= endRow; i-- ) {
@@ -71,26 +66,3 @@ private:
 		}
     }
 };
-
-int main()
-{
-	Solution s;
-	vector<vector<int>> inputs;
-	vector<int> row1, row2, row3;
-	row1.push_back(1);
-	row1.push_back(2);
-	row1.push_back(3);
-	row1.push_back(4);
-	row2.push_back(5);
-	row2.push_back(6);
-	row2.push_back(7);
-	row2.push_back(8);
-	row3.push_back(9);
-	row3.push_back(10);
-	row3.push_back(11);
-	row3.push_back(12);
-	inputs.push_back(row1);
-	inputs.push_back(row2);
-	inputs.push_back(row3);
-	vector<int> result = s.spiralOrder(inputs);
-}

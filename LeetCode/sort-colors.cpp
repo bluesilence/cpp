@@ -1,20 +1,22 @@
 class Solution {
 public:
-    void sortColors(int A[], int n) {
-        if (!A || n < 2)
-            return;
+    void sortColors(vector<int>& nums) {
+        int redIndex = -1;
+        int whiteIndex = -1;
+        int blueIndex = -1;
         
-        int colorCount[3] = { 0 };
-        for (int i = 0; i < n; i++) {
-            colorCount[A[i]]++;
-        }
-        
-        int index = 0;
-        for (int j = 0; j < 3; j++) {
-            int count = colorCount[j];
-            while (count-- > 0) {
-                A[index++] = j;
+        for (int i = 0; i < nums.size(); i++) {
+            if (nums[i] == 0) {
+                nums[++blueIndex] = 2;
+                nums[++whiteIndex] = 1;
+                nums[++redIndex] = 0;
+            } else if (nums[i] == 1) {
+                nums[++blueIndex] = 2;
+                nums[++whiteIndex] = 1;
+            } else if (nums[i] == 2) {
+                nums[++blueIndex] = 2;
             }
         }
+        
     }
 };

@@ -26,7 +26,7 @@ public:
 
 private:
     int fillLeftToRight(vector<vector<int> > &matrix, int circle, int startingNum) {
-        for (int col = circle; col < matrix[0].size()-circle; col++) {
+        for (int col = circle; col < matrix[0].size() - circle; col++) {
             matrix[circle][col] = startingNum++;
         }
         
@@ -34,23 +34,23 @@ private:
     }
     
     int fillTopToBottom(vector<vector<int> > &matrix, int circle, int startingNum) {
-        for (int row = circle+1; row < matrix[0].size()-circle; row++) {
-            matrix[row][matrix[0].size()-circle-1] = startingNum++;
+        for (int row = circle + 1; row < matrix.size() - circle; row++) {
+            matrix[row][matrix[0].size() - 1 - circle] = startingNum++;
         }
         
         return startingNum;
     }
     
     int fillRightToLeft(vector<vector<int> > &matrix, int circle, int startingNum) {
-        for (int col = matrix[0].size()-circle-2; col >= circle; col--) {
-            matrix[matrix.size()-circle-1][col] = startingNum++;
+        for (int col = matrix[0].size() - 2 - circle; col >= circle; col--) {
+            matrix[matrix.size() - 1 - circle][col] = startingNum++;
         }
         
         return startingNum;
     }
     
     int fillBottomToTop(vector<vector<int> > &matrix, int circle, int startingNum) {
-        for (int row = matrix.size()-circle-2; row > circle; row--) {
+        for (int row = matrix.size() - 2 - circle; row > circle; row--) {
             matrix[row][circle] = startingNum++;
         }
         

@@ -9,43 +9,44 @@
 class Solution {
 public:
     ListNode *rotateRight(ListNode *head, int k) {
-        //Split the list at the (len - k)th node into list a and b, then stitch b before a
-        if (!head)
-            return NULL;
+        //Split the list into 2 sublists, and swap them
+        if (!head || !head->next)
+            return head;
         
-        int len = getLen(head);
+        ListNode *p1 = head;
+        ListNode *p2 = head;
         
-        //Avoid duplicate moves
-        k = k % len;
+        k = k % getLen(head);
         
+        //No rotation needed
         if (k == 0)
             return head;
             
-        ListNode *aTail = head;
-        for (int i = 1; i < len - k; k++) {
-            aTail = aTail->next;
+        for (int i = 0; i < k; i++) {
+            p2 = p2->next;
         }
         
-        ListNode *bHead = aTail->next;
-        aTail->next = NULL; //Cut off list a and b
-        
-        ListNode *bTail = bHead;
-        while (bTail->next) {
-            bTail = bTail->next;
+        while (p2 && p2->next) {
+            p1 = p1->next;
+            p2 = p2->next;
         }
         
-        bTail->next = head; //Stitch b before a
+        ListNode *head1 = head;
+        ListNode *head2 = p1->next;
         
-        return bHead;
+        p1->next = NULL;
+        p2->next = head1;
+        
+        return head2;
     }
 
 private:
     int getLen(ListNode *head) {
         int len = 0;
-        ListNode *p = head;
-        while (p) {
+        
+        while (head) {
+            head = head->next;
             len++;
-            p = p->next;
         }
         
         return len;

@@ -5,7 +5,7 @@ public:
         //For i <- 1 to n, for the digits other than highest digits, the order is the reverse order of them in results
         vector<int> results;
         
-        if (n <= 0)
+        if (n < 0)
             return results;
         
         results.push_back(0);

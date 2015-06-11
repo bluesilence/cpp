@@ -13,25 +13,28 @@ public:
             return head;
         
         ListNode *dummyHead = new ListNode(0);
-        
         dummyHead->next = head;
         
-        ListNode *pFast, *pSlow;
-        pFast = head;
-        pSlow = dummyHead;
+        ListNode *p = dummyHead;
+        ListNode *q = head;
         
-        while (pFast) {
-            while (pFast->next && pSlow->next->val == pFast->next->val) {
-                pFast = pFast->next;
+        bool hasDup;
+        while (q && q->next) {
+            hasDup = false;
+            
+            while (q && q->next && q->val == q->next->val) {
+                q = q->next;
+                hasDup = true;
             }
             
-            if (pSlow->next == pFast) {  //pFast->val is distinct
-                pSlow = pSlow->next;
-            } else {    //Skip pFast->val since there are duplicates, but we don't know if next number has duplicates, so pSlow stay unchanged here, just change pSlow->next.
-                pSlow->next = pFast->next;
+            if (!hasDup) {
+                p->next = q;
+                p = q;
+            } else {    //We don't yet know if the next nodes have duplicates, so keep p unchanged here
+                p->next = q->next;
             }
             
-            pFast = pFast->next;
+            q = q->next;
         }
         
         head = dummyHead->next;

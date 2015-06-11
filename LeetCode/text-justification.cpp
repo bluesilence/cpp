@@ -2,79 +2,75 @@ class Solution {
 public:
     vector<string> fullJustify(vector<string>& words, int maxWidth) {
         vector<string> results;
+        
         if (words.empty())
             return results;
         
         for (int i = 0; i < words.size(); i++) {
-            if (words[i].size() > maxWidth)    //No valid justification solution
+            if (words[i].size() > maxWidth)  //No possible justification
                 return results;
         }
         
-        vector<vector<string>> wordsPerLine;
-        vector<int> lengthPerLine;
+        vector<vector<string> > lines;
         
-        int lineCount = 1;
-        //Collect words as many as possible in each line until the total length of (words + spaces) > L
-        int i = 0;
-		while (i < words.size()) {
-            if (wordsPerLine.size() < lineCount) {
-                vector<string> newLine;
-                wordsPerLine.push_back(newLine);
-                lengthPerLine.push_back(0);
+        int wordCnt = 0;
+        while (wordCnt < words.size()) {
+            int lineWidth = 0;
+            
+            vector<string> line;
+            while(wordCnt < words.size() && lineWidth + words[wordCnt].size() <= maxWidth) {   //the word to the maxWidth in a line doesn't require space
+                line.push_back(words[wordCnt]);
+                lineWidth += words[wordCnt].size();
+                if (lineWidth < maxWidth)   //Add 1 space between words
+                    lineWidth++;
+                    
+                wordCnt++;
             }
             
-            if (lengthPerLine[lineCount-1] + words[i].size() <= maxWidth) {   //Collect word to existing line
-                wordsPerLine[lineCount-1].push_back(words[i]);
-                lengthPerLine[lineCount-1] += words[i].size() + 1; //1 for the space after the word
-				i++;
-            } else {    //Prepare a new line
-                lineCount++;
-            }
+            lines.push_back(line);
         }
         
-        //Calculate extra spaces: E = L - (total length of words per line) - (necessary spaces between words per line)
-        //Divide extra spaces: let each words pick one space at a time until all extra spaces runs out
-        for (int i = 0; i < lineCount; i++) {
-            string line = "";
-            int extraSpaces = maxWidth - (lengthPerLine[i] - 1);
-            //Allocate extra spaces
-            allocateExtraSpaces(wordsPerLine[i], extraSpaces, i == (lineCount-1));
+        for (int i = 0; i < lines.size(); i++) {
+            int wordsPerLine = lines[i].size();
             
-            //Allocate necessary spaces
-            for (int j = 0; j < wordsPerLine[i].size(); j++) {
-                line += wordsPerLine[i][j];
-                if (j < wordsPerLine[i].size() - 1) //Not last word
-                    line += " ";
+            int wordsLen = 0;
+            for (int j = 0; j < wordsPerLine; j++) {
+                wordsLen += lines[i][j].size();
             }
             
-            results.push_back(line);
+            int spaces = maxWidth - wordsLen;
+            if (i < lines.size() - 1) {
+                if (wordsPerLine == 1) {
+                    lines[i][0] += string(spaces, ' ');
+                } else {
+                    int extraSpacesPerWord = spaces / (wordsPerLine - 1);
+                    int remainingSpaces = spaces - extraSpacesPerWord * (wordsPerLine - 1);
+            
+                    for (int j = 0; j + 1 < wordsPerLine; j++) {    //No extra space after the last word in a line
+                        lines[i][j] += string(extraSpacesPerWord, ' ');
+                    }
+            
+                    //Assign remaining spaces to the left words in a line
+                    for (int j = 0; j < remainingSpaces; j++) {
+                        lines[i][j] += " ";
+                    }
+                }
+            } else {    //Last line, all the extra spaces should be left after the last word
+                for (int j = 0; j + 1 < wordsPerLine; j++) {    //No extra space after the last word in a line
+                    lines[i][j] += " ";
+                }
+                
+                lines[i][wordsPerLine-1] += string(spaces - (wordsPerLine - 1), ' ');
+            }
+            
+            string justifiedLine = "";
+            for (int j = 0; j < wordsPerLine; j++) {
+                justifiedLine += lines[i][j];
+            }
+            
+            results.push_back(justifiedLine);
         }
         
         return results;
-    }
-
-private:
-    void allocateExtraSpaces(vector<string> &words, int extraSpaces, bool isLastLine) {
-        if (isLastLine || words.size() == 1) {   //In the last line, extra spaces must be put after the last word
-            words[words.size()-1] += string(extraSpaces, ' ');
-        } else {
-            int extraSpacesPerWord = extraSpaces / (words.size() - 1);  //No extra space for the last word
-            if (extraSpacesPerWord > 0) {
-                for (int j = 0; j + 1 < words.size(); j++) {
-                    words[j] += string(extraSpacesPerWord, ' ');
-                }
-            }
-            
-            extraSpaces -= extraSpacesPerWord * (words.size() - 1);
-            
-            //Allocate remaining spaces
-            for (int j = 0; j + 1 < words.size(); j++) {
-                if (extraSpaces == 0)
-                    break;
-                    
-                words[j] += " ";
-                extraSpaces--;
-            }
-        }
     }
 };

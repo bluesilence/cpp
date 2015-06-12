@@ -1,5 +1,5 @@
 /**
- * Definition for binary tree
+ * Definition for a binary tree node.
  * struct TreeNode {
  *     int val;
  *     TreeNode *left;
@@ -9,35 +9,51 @@
  */
 class Solution {
 public:
-    void recoverTree(TreeNode *root) {
-        TreeNode* first = NULL;  //First wrong node
-        TreeNode* mid = NULL;  //The node that is the next node to first in an InOrderTraversal.
-        TreeNode* second = NULL;  //Second wrong node
-        TreeNode* prev = NULL;  //Previous node to root in an InOrderTraversal. Used to determine if root is disordered
-        recorverTreeUtil(root, prev, first, mid, second);  
+    void recoverTree(TreeNode* root) {
+        if (!root)
+            return;
         
-        if(second != NULL)
-            swap(first->val, second->val);  
-        else    //Only 1 disorder. The 2 nodes are adjacent
-            swap(first->val, mid->val);  
+        TreeNode *pre = NULL;
+        TreeNode *firstWrongNode = NULL;
+        TreeNode *secondWrongNode = NULL;
+        TreeNode *postFirstWrongNode = NULL;
+        
+        findWrongNodes(root, pre, firstWrongNode, secondWrongNode, postFirstWrongNode);
+        
+        if (!secondWrongNode) {
+            swap(firstWrongNode, postFirstWrongNode);
+        } else {
+            swap(firstWrongNode, secondWrongNode);
+        }
     }
 
 private:
-    void recorverTreeUtil(TreeNode* root, TreeNode*& prev, TreeNode*& first, TreeNode*& mid, TreeNode*& second) {  
-        if(!root)
+    void findWrongNodes(TreeNode *root, TreeNode *&pre, TreeNode *&firstWrongNode, TreeNode *&secondWrongNode, TreeNode *&postFirstWrongNode) {
+        if (!root)
             return;
-            
-        recorverTreeUtil(root->left, prev, first, mid, second);  
-        if(prev != NULL && prev->val > root->val) {  
-            if(!first) {
-                first = prev;
-                mid = root;  
+        
+        if (root->left)
+            findWrongNodes(root->left, pre, firstWrongNode, secondWrongNode, postFirstWrongNode);
+        
+        if (pre != NULL && pre->val > root->val)    {//Found wrong node since it caused descending order
+            if (!firstWrongNode) {
+                firstWrongNode = pre;
+                //Why don't assign it to "secondWrongNode"?
+                //Because we don't know if there is a second wrong node(descending order) besides this pair of disordered nodes.
+                postFirstWrongNode = root;
             } else {
-                second = root;
+                secondWrongNode = root;
             }
         }
         
-        prev = root;  
-        recorverTreeUtil(root->right, prev, first, mid, second);  
+        pre = root; //Update pre before traversing root's right child
+        
+        if (root->right)
+            findWrongNodes(root->right, pre, firstWrongNode, secondWrongNode, postFirstWrongNode);
+    }
+    void swap(TreeNode *p1, TreeNode *p2) {
+        int tmp = p1->val;
+        p1->val = p2->val;
+        p2->val = tmp;
     }
 };

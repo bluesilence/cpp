@@ -8,42 +8,46 @@
  */
 class Solution {
 public:
-    ListNode *reverseBetween(ListNode *head, int m, int n) {
-        if (!head || !head->next)
+    ListNode* reverseBetween(ListNode* head, int m, int n) {
+        if (!head || m >= n)
             return head;
+        
+        ListNode *dummyHead = new ListNode(0);
+        
+        dummyHead->next = head;
+        
+        ListNode *preStart = dummyHead;
+        
+        int i = 1;
+        
+        while (preStart && preStart->next && i < m) {
+            preStart = preStart->next;
             
-        ListNode *preBegin = NULL;
-        ListNode *begin = head;
-        //Move preBegin to the node before the head of the sub list to be reversed
-        for(int i = 1; i < m; i++)
-        {
-            preBegin = begin;
-            begin = begin->next;
+            i++;
         }
         
-        //The end of reversed sub list
-        ListNode *end = begin;
-        //pre and post are 2 pointers used for traverse the sub list and reverse one by one
-        ListNode *pre = begin;
+        ListNode *pre = NULL;
+        ListNode *p = preStart->next;
         ListNode *post = NULL;
-        begin = begin->next;
         
-        for(int i = m; i < n; i++)
-        {
-            post = begin->next;
-            begin->next = pre;
-            pre = begin;
-            begin = post;
+        while (p && i <= n) {
+            post = p->next;
+            p->next = pre;
+            pre = p;
+            p = post;
+            
+            i++;
         }
         
-        //begin now points to the node after the reversed sub list
-        end->next = begin;
+        //Original head is the tail of reversed list
+        ListNode *tail = preStart->next;
         
-        //pre now points to the head of the reversed sub list
-        if (preBegin)
-            preBegin->next = pre;
-        else
-            head = pre;
+        //pre is the head of reversed list
+        preStart->next = pre;
+        tail->next = p;
+        
+        head = dummyHead->next;
+        delete dummyHead;
         
         return head;
     }

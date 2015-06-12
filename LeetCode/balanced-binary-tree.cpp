@@ -1,5 +1,5 @@
 /**
- * Definition for binary tree
+ * Definition for a binary tree node.
  * struct TreeNode {
  *     int val;
  *     TreeNode *left;
@@ -9,9 +9,10 @@
  */
 class Solution {
 public:
-    bool isBalanced(TreeNode *root) {
-        int h = 0;
-        return isBalancedCore(root, h);
+    bool isBalanced(TreeNode* root) {
+        int height = 0;
+        
+        return isBalancedCore(root, height);
     }
 
 private:
@@ -21,16 +22,19 @@ private:
             return true;
         }
         
-        int lHeight = 0, rHeight = 0;
-        bool lBalanced = isBalancedCore(root->left, lHeight);
-        if (lBalanced) {
-            bool rBalanced = isBalancedCore(root->right, rHeight);
-            if (rBalanced && lHeight - rHeight <= 1 && rHeight - lHeight <= 1) {
-                height = lHeight > rHeight ? (lHeight + 1) : (rHeight + 1);
-                return true;
-            }
-        }
+        int leftHeight = 0;
+        bool leftIsBalanced = isBalancedCore(root->left, leftHeight);
         
-        return false;
+        if (!leftIsBalanced)
+            return false;
+            
+        int rightHeight = 0;
+        bool rightIsBalanced = isBalancedCore(root->right, rightHeight);
+        
+        int heightDiff = leftHeight - rightHeight;
+        
+        height = max(leftHeight, rightHeight) + 1;
+        
+        return rightIsBalanced && (heightDiff >= -1 && heightDiff <= 1);
     }
 };

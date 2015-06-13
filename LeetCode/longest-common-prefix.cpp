@@ -1,45 +1,24 @@
 class Solution {
 public:
-    string longestCommonPrefix(vector<string> &strs) {
-        int n = strs.size();
-        if (n < 1)
+    string longestCommonPrefix(vector<string>& strs) {
+        if (strs.empty())
             return "";
         
         sort(strs.begin(), strs.end());
         
-        char *temp = new char[n];
+        string prefix = "";
         
-        //The longest possible prefix is strs[0]
-        int maxLen = strs[0].size();
-        int i = 0;
-        while (i < maxLen) {
-            //Pick the ith character of each string
-            for (int j = 0; j < n; j++) {
-                temp[j] = strs[j][i];
+        for (int i = 0; i < strs[0].size(); i++) {
+            char c = strs[0][i];
+            for (int j = 0; j < strs.size(); j++) {
+                if (strs[j][i] != c) {
+                    return prefix;
+                }
             }
             
-            if (!isCommon(temp, n))
-                break;
-                
-            i++;
+            prefix += c;
         }
         
-        delete temp;
-        
-        return strs[0].substr(0, i);
-    }
-
-private:
-    bool isCommon(char* temp, int n) {
-        if (!temp || n < 1)
-            return false;
-            
-        char ch = temp[0];
-        for (int i = 1; i < n; i++) {
-            if (temp[i] != ch)
-                return false;
-        }
-        
-        return true;
+        return prefix;
     }
 };

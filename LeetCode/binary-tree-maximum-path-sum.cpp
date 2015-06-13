@@ -1,5 +1,5 @@
 /**
- * Definition for binary tree
+ * Definition for a binary tree node.
  * struct TreeNode {
  *     int val;
  *     TreeNode *left;
@@ -9,34 +9,38 @@
  */
 class Solution {
 public:
-    int maxPathSum(TreeNode *root) {
-        int max = numeric_limits<int>::min();
-        maxPathSumCore(root, max);
-        
-        return max;
-    }
-    
-private:
-    int maxPathSumCore(TreeNode *root, int &maximum) {
+    int maxPathSum(TreeNode* root) {
         if (!root)
             return 0;
-            
-        int lMax = root->left ? maxPathSumCore(root->left, maximum) : 0;
-        int rMax = root->right ? maxPathSumCore(root->right, maximum) : 0;
+        
+        int maxSum = numeric_limits<int>::min();
+        
+        maxPathSumCore(root, maxSum);
+        
+        return maxSum;
+    }
+
+private:
+    //maxSum is the max of path sum within the subtree of root, which may be 2 sided
+    //return value is the max of path sum on 1 side of root's subtrees, so that it could be used to form deeper path
+    int maxPathSumCore(TreeNode *root, int &maxSum) {
+        if (!root)
+            return 0;
+        
+        int leftMax = maxPathSumCore(root->left, maxSum);
+        int rightMax = maxPathSumCore(root->right, maxSum);
         
         int sum = root->val;
-        if (lMax > 0)
-            sum += lMax;
+        if (leftMax > 0) {
+            sum += leftMax;
+        }
         
-        if (rMax > 0)
-            sum += rMax;
-            
-        maximum = max(maximum, sum);
+        if (rightMax > 0) {
+            sum += rightMax;
+        }
         
-        return max(lMax, rMax) > 0 ? (max(lMax, rMax) + root->val) : root->val;
-    }
-    
-    int max(int a, int b) {
-        return a > b ? a : b;
+        maxSum = max(maxSum, sum);
+        
+        return root->val + (max(leftMax, rightMax) > 0 ? max(leftMax, rightMax) : 0);
     }
 };

@@ -1,45 +1,49 @@
 class Solution {
 public:
     int longestValidParentheses(string s) {
-        //Use 2 stack to store position of left and right parentheses that form valid pairs
-        //Scan the string, if a right parentheses appears earlier than the left one, skip the parentheses
-        //Otherwise, count it
-        //Count the number of pairs whose right appears later than left, return 2 * size as length.
-        stack<int> pair;
-        bool *formedPair = new bool[s.size()];
-        memset(formedPair, false, s.size());
+        if (s.size() < 2)
+            return 0;
+        
+        //Store unmatched left parentheses
+        stack<int> leftParens;
+        //Store if the substring ended at i can form valid pair
+        vector<bool> canFormPair(s.size(), false);
         
         for (int i = 0; i < s.size(); i++) {
             if (s[i] == '(') {
-                pair.push(i);
-            } else if (s[i] == ')') {
-                if (!pair.empty()) {
-                    formedPair[i] = true;
-                    formedPair[pair.top()] = true;
-                    pair.pop();
+                leftParens.push(i);
+            } else {
+                if (!leftParens.empty()) {
+                    canFormPair[i] = true;
+                    canFormPair[leftParens.top()] = true;
+                    leftParens.pop();
                 }
             }
         }
         
-        int maxLen = 0, len = 0;
+        int maxLen = 0;
+        int len = 0;    //The length of continuous canFormPair[i] == true
+        
         for (int i = 0; i < s.size(); i++) {
-            if (formedPair[i] == true) {
+            if (canFormPair[i]) {
                 len++;
                 continue;
             }
             
-            if (len > maxLen)
+            //canFormPair[i] == false
+            if (len > maxLen) {
                 maxLen = len;
+            }
             
+            //Prepare for next valid substring
             len = 0;
         }
         
-        //All are valid pairs, the loop hasn't calculated maxLen
-        if (len > maxLen)
-                maxLen = len;
-                
-        delete formedPair;
+        //All the elements in canFormPair are true
+        if (len > maxLen) {
+            maxLen = len;
+        }
         
-        return maxLen;
+		return maxLen;
     }
 };

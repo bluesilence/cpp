@@ -4,50 +4,48 @@ public:
         path.clear();
         results.clear();
         
-        unordered_set<string> currentSteps, nextSteps;
-        
-        unordered_map<string, unordered_set<string>> adjs;
-        
+        map<string, unordered_set<string>> adjacents;
         unordered_set<string> unvisited = dict;
+        unordered_set<string> currentSteps;
+        unordered_set<string> nextSteps;
         
-        if (unvisited.find(start) != unvisited.end())
+        if (unvisited.find(start) != unvisited.end()) {
             unvisited.erase(start);
-            
+        }
+        
         currentSteps.insert(start);
         
-        while (currentSteps.find(end) == currentSteps.end() && !unvisited.empty()) {
-            for (auto pCur = currentSteps.begin(); pCur != currentSteps.end(); pCur++) {
-                string word = *pCur;
-                
-                for (int i = 0; i < start.length(); i++) {
-                    for (int j = 0; j < 26; j++) {
-                        string tmp = word;
-                        if (tmp[i] == 'a' + j)
-                            continue;
-                        
-                        tmp[i] = 'a' + j;
-                        if (unvisited.find(tmp) != unvisited.end()) {
-                            nextSteps.insert(tmp);
-                            adjs[tmp].insert(word);
+        while (!currentSteps.empty() && currentSteps.find(end) == currentSteps.end()) {
+            nextSteps.clear();
+            
+            for (auto iter = currentSteps.begin(); iter != currentSteps.end(); iter++) {
+                string originalWord = *iter;
+                string adjWord = originalWord;
+            
+                for (int i = 0; i < adjWord.size(); i++) {
+                    for (char c = 'a'; c <= 'z'; c++) {
+                        if (c != adjWord[i]) {
+                            adjWord[i] = c;
+                            
+                            if (unvisited.find(adjWord) != unvisited.end()) {
+                                nextSteps.insert(adjWord);
+                                adjacents[originalWord].insert(adjWord);
+                            }
                         }
                     }
+                    
+                    adjWord[i] = originalWord[i];   //revert the change
                 }
             }
-            
-            if (nextSteps.empty())
-                break;
             
             for (auto it = nextSteps.begin(); it != nextSteps.end(); it++) {
                 unvisited.erase(*it);
             }
             
             currentSteps = nextSteps;
-            nextSteps.clear();
         }
-         
-        if (currentSteps.find(end) != currentSteps.end()) {
-            GeneratePath(adjs, end, start);
-        }
+        
+        genPaths(adjacents, start, end);
         
         return results;
     }
@@ -56,19 +54,18 @@ private:
     vector<string> path;
     vector<vector<string>> results;
     
-    void GeneratePath(unordered_map<string, unordered_set<string>> &adjs, const string &start, const string &end) {
+    void genPaths(map<string, unordered_set<string>> &adjacents, string start, string end) {
         path.push_back(start);
+        
         if (start == end) {
-            vector<string> reversePath = path;
-            reverse(reversePath.begin(), reversePath.end());
-            results.push_back(reversePath);
-            return;
+            results.push_back(path);
+        } else {
+            unordered_set<string> adjs = adjacents[start];
+            for (auto iter = adjs.begin(); iter != adjs.end(); iter++) {
+                genPaths(adjacents, *iter, end);
+            }
         }
         
-        unordered_set<string> adjacentStrings = adjs[start];
-        for (auto it = adjacentStrings.begin(); it != adjacentStrings.end(); it++) {
-            GeneratePath(adjs, *it, end);
-            path.pop_back();
-        }
+        path.pop_back();
     }
 };

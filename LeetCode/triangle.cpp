@@ -1,37 +1,35 @@
 class Solution {
 public:
     int minimumTotal(vector<vector<int> > &triangle) {
-        if (1 == triangle.size())   //Only 1 element
-            return triangle[0][0];
+        //Similar to pascal's triangle
+        //For the first/last element in a row, there is only 1 possible path: from previous row's first/last element
+        //For the other elements, minPath[i] = min(minPath[i-1], minPath[i]), where minPath records the previous row's dp result
+        if (triangle.empty() || triangle[0].empty())
+            return 0;
             
-        //Use dp from bottom up
-        //dp[i][j] = triangle[i][j] + min(dp[i+1][j], dp[i+1][j+1])
-        //The size is the size of the bottom of the triangle
-        int *cur = new int[triangle[triangle.size()-1].size()] { 0 };
-        int *pre = new int[triangle[triangle.size()-1].size()] { 0 };
+        vector<int> minPaths;
+        minPaths.push_back(triangle[0][0]);
         
-        bool flag = false;
-        for (int i = triangle.size() - 1; i >= 0; i--) {
-            for (int j = triangle[i].size() - 1; j >= 0; j--) {
-                if (triangle.size() - 1 == i) { //Bottom row
-                    pre[j] = triangle[i][j];
+        for (int i = 1; i < triangle.size(); i++) {
+            for (int j = i; j >= 0; j--) {
+                if (j == i) {
+                    minPaths.push_back(minPaths[j-1] + triangle[i][j]);
+                } else if (j == 0) {
+                    minPaths[j] += triangle[i][j];
                 } else {
-                    cur[j] = triangle[i][j] + min(pre[j], pre[j+1]);
-                    flag = true;
+                    minPaths[j] = min(minPaths[j-1], minPaths[j]) + triangle[i][j];
                 }
-            }
-            
-            if (flag) {
-                int *tmp = pre;
-                pre = cur;
-                cur = tmp;
             }
         }
         
-        int result = pre[0];
-        delete cur;
-        delete pre;
+        int minTotal = numeric_limits<int>::max();
         
-        return result;
+        for (int i = 0; i < minPaths.size(); i++) {
+            if (minPaths[i] < minTotal) {
+                minTotal = minPaths[i];
+            }
+        }
+        
+        return minTotal;
     }
 };

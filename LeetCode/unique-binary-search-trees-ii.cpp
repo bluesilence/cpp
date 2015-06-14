@@ -1,5 +1,5 @@
 /**
- * Definition for binary tree
+ * Definition for a binary tree node.
  * struct TreeNode {
  *     int val;
  *     TreeNode *left;
@@ -9,33 +9,33 @@
  */
 class Solution {
 public:
-    vector<TreeNode *> generateTrees(int n) {
-        vector<TreeNode *> results = generateCore(1, n);  
-        return results;
+    vector<TreeNode*> generateTrees(int n) {
+        vector<TreeNode*> results;
+        
+        return generateCore(1, n);
     }
 
 private:
-    vector<TreeNode *> generateCore(int start, int end) {
-        vector<TreeNode *> results; 
+    vector<TreeNode*> generateCore(int start, int end) {
+        vector<TreeNode*> results;
         
-        if (start > end) {  
-            results.push_back(NULL);          
-        } else {  
+        if (start > end) {
+            results.push_back(NULL);    //So that one-sided trees can also leverage the double-loops in L29~30.
+        } else {
             for (int i = start; i <= end; i++) {
-                //Collect all the possible subtrees
-                vector<TreeNode *> left = generateCore(start, i - 1);  
-                vector<TreeNode *> right = generateCore(i + 1, end); 
+                vector<TreeNode*> leftTrees = generateCore(start, i - 1);
+                vector<TreeNode*> rightTrees = generateCore(i + 1, end);
                 
-                //Combine with each possible subtree to form a new tree
-                for (int j = 0; j < left.size(); j++) {  
-                    for (int k = 0; k < right.size(); k++) {  
-                        TreeNode *root = new TreeNode(i);  
-                        root->left = left[j];  
-                        root->right = right[k];  
-                        results.push_back(root);  
-                    }  
-                }  
-            }  
+                for (int j = 0; j < leftTrees.size(); j++) {
+                    for (int k = 0; k < rightTrees.size(); k++) {
+                        TreeNode *root = new TreeNode(i);
+                        root->left = leftTrees[j];
+                        root->right = rightTrees[k];
+                        
+                        results.push_back(root);
+                    }
+                }
+            }
         }
         
         return results;

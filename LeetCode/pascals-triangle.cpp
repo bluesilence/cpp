@@ -1,24 +1,28 @@
 class Solution {
 public:
-    vector<vector<int> > generate(int numRows) {
-        vector<vector<int>> result;
+    vector<vector<int>> generate(int numRows) {
+        vector<vector<int>> results;
         
-        for(int i = 0; i < numRows; i++) {
-            vector<int> temp;
-            temp.push_back(1);
-            if(i > 1) {
-                for(int j = 1; j < i; j++) {
-                    temp.push_back(result[i-1][j-1] + result[i-1][j]);
+        if (numRows < 1) {
+            return results;
+        }
+            
+        vector<int> currentRow;
+        
+        for (int i = 1; i <= numRows; i++) {
+            for (int j = 0; j < i; j++) {
+                if (j == 0 || j == i - 1) { //First or last number of a row
+                    currentRow.push_back(1);
+                } else {
+                    currentRow.push_back(results[i-2][j-1] + results[i-2][j]);
                 }
             }
             
-            if(i > 0) {
-                temp.push_back(1);
-            }
+            results.push_back(currentRow);
             
-            result.push_back(temp);
+            currentRow.clear();
         }
         
-        return result;
+        return results;
     }
 };

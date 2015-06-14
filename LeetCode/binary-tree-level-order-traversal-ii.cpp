@@ -1,5 +1,5 @@
 /**
- * Definition for binary tree
+ * Definition for a binary tree node.
  * struct TreeNode {
  *     int val;
  *     TreeNode *left;
@@ -9,54 +9,42 @@
  */
 class Solution {
 public:
-    vector<vector<int> > levelOrderBottom(TreeNode *root) {
-        vector<vector<int>> result2;
-        
+    vector<vector<int>> levelOrderBottom(TreeNode* root) {
+        vector<vector<int>> results;
         if (!root)
-            return result2;
-            
-        queue<TreeNode*> s1, s2;
-        s1.push(root);
+            return results;
         
-        TreeNode *p = NULL;
-        stack<vector<int>> results;
-        vector<int> levelResult;
-        while (!s1.empty() || !s2.empty()) {
-            levelResult.clear();
+        queue<TreeNode*> q;
+        q.push(root);
+        q.push(NULL);
+        
+        vector<int> result;
+        
+        while (!q.empty()) {
+            TreeNode *tmp = q.front();
+            q.pop();
             
-            //one of s1, s2 must be empty
-            if (!s1.empty()) {
-                while (!s1.empty()) {
-                    p = s1.front();
-                    s1.pop();
-                    levelResult.push_back(p->val);
-                    if (p->left)
-                        s2.push(p->left);
-                    
-                    if (p->right)
-                        s2.push(p->right);
+            if (tmp == NULL) {
+                if (!q.empty()) {
+                    q.push(NULL);
                 }
+                
+                results.push_back(result);
+                result.clear(); //Clear previous result for next level
             } else {
-                while (!s2.empty()) {
-                    p = s2.front();
-                    s2.pop();
-                    levelResult.push_back(p->val);
-                    if (p->left)
-                        s1.push(p->left);
+                result.push_back(tmp->val);
+                if (tmp->left) {
+                    q.push(tmp->left);
+                }
                     
-                    if (p->right)
-                        s1.push(p->right);
+                if (tmp->right) {
+                    q.push(tmp->right);
                 }
             }
-            
-            results.push(levelResult);
         }
         
-        while (!results.empty()) {
-            result2.push_back(results.top());
-            results.pop();
-        }
+        reverse(results.begin(), results.end());
         
-        return result2;
+        return results;
     }
 };

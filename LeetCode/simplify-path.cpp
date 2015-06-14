@@ -2,51 +2,57 @@ class Solution {
 public:
     string simplifyPath(string path) {
         if (path.empty())
-            return "/";
+            return path;
         
-        stack<string> validPaths;
-        int i = 0;
-        int j = 0;
-        int len = path.size();
+        stack<string> actualPaths;
         
-        while (i < len) {
-            while (i < len && path[i] == '/')
-                i++;
+        int begin = 0;
+        int end = 0;
+        
+        while (begin < path.size()) {
+            while (begin < path.size() && path[begin] == '/') {
+                begin++;
+            }
             
-            if (i < len) {
-                j = i;
-                while (j < len && path[j] != '/')
-                    j++;
+            if (begin < path.size()) {
+                end = begin;
+                while (end < path.size() && path[end] != '/') {
+                    end++;
+                }
                 
-                string tmp = path.substr(i, j-i);
-                if (tmp == ".") {
-				        } else if (tmp == "..") {
-					        if (!validPaths.empty())
-						        validPaths.pop();
-				        } else {
-                  validPaths.push(tmp);
-				        }
-
-				        i = j + 1;
+                string subPath = path.substr(begin, end - begin);
+                
+                if (subPath == "..") {
+                    if (!actualPaths.empty()) {
+                        actualPaths.pop();
+                    }
+                } else if (subPath == ".") {
+                    //Do nothing
+                } else {
+                    actualPaths.push(subPath);
+                }
+                
+                begin = end;
             }
         }
         
-        return generatePath(validPaths);
+        return combinePaths(actualPaths);
     }
 
 private:
-    string generatePath(stack<string> &paths) {
-        if (paths.empty())
-            return "/";
-            
-        string path = "";
+    string combinePaths(stack<string> &paths) {
+        string result = "";
+        
         while (!paths.empty()) {
-            string tmp = paths.top();
+            string path = paths.top();
             paths.pop();
             
-            path = "/" + tmp + path;
+            result = "/" + path + result;
         }
         
-        return path;
+        if (result.empty())
+            return "/";
+        else
+            return result;
     }
 };

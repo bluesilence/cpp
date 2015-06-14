@@ -1,25 +1,24 @@
 class Solution {
 public:
     vector<int> getRow(int rowIndex) {
-        vector<int> curr;
-        vector<int> pre;
+        vector<int> row;
         
-        for(int i = 0; i <= rowIndex; i++) {
-            curr.clear();
-            curr.push_back(1);
-            if(i > 1) {
-                for(int j = 1; j < i; j++) {
-                    curr.push_back(pre[j-1] + pre[j]);
-                }
-            }
-            
-            if(i > 0) {
-                curr.push_back(1);
-            }
-            
-            pre = curr;
+        if (rowIndex < 0) {
+            return row;
         }
         
-        return curr;
+        row.push_back(1);
+        
+        for (int i = 1; i <= rowIndex; i++) {
+            for (int j = i; j >= 1; j--) {
+                if (j == i) {   //Last number of the new row
+                    row.push_back(1);
+                } else {    //currentRow[j] = previousRow[j-1] + previousRow[j]
+                    row[j] += row[j-1];
+                }
+            }
+        }
+        
+        return row;
     }
 };

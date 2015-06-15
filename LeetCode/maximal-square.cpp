@@ -14,13 +14,7 @@ public:
         
         int maxLen = 0;
         
-        //First row
-        for (int j = 1; j <= N; j++) {
-            dp[0][j] = matrix[0][j-1] - '0';
-            maxLen = max(maxLen, dp[0][j]);
-        }
-        
-        for (int row = 1; row < M; row++) {
+        for (int row = 0; row < M; row++) {
             int dpRow = row & 0x01; //0 or 1
             
             for (int col = 1; col <= N; col++) {

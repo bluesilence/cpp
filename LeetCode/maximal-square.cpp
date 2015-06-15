@@ -7,10 +7,10 @@ public:
         const int M = matrix.size();
         const int N = matrix[0].size();
         
-        //dp[i][j]: the maximal length of side of square with the bottom-right corner sitting at matrix[i][j]
-        //Add column 0 so that the (col-1) in L24 >= 0
+        //dp[i][j]: the maximal length of side of square with the bottom-right corner sitting at matrix[i][j-1]
+        //Add column 0 as boundary condition
         vector<vector<int>> dp = vector<vector<int>>(2, vector<int>(N + 1, 0));
-        dp[0][0] = 0;
+        dp[0][0] = 0;   //Boundary
         
         int maxLen = 0;
         

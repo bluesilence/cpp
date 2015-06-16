@@ -4,19 +4,19 @@ public:
         if (nums.size() < 2 || k < 0)
             return false;
         
-        map<int, int> numIndices;
+        //Record the latest (k+1) numbers
+        unordered_set<int> kNums;
         
         for (int i = 0; i < nums.size(); i++) {
-            if (numIndices.find(nums[i]) == numIndices.end()) {
-                numIndices[nums[i]] = i;
-            } else {
-                int j = numIndices[nums[i]];
-                if (i - j <= k) {
-                    return true;
-                } else {    //If i - j > k, the following i - j also > k, so no need to record j. Replace it with i.
-                    numIndices[nums[i]] = i;
-                }
+            if (i > k) {
+                kNums.erase(nums[i - k - 1]);
             }
+            
+            if (kNums.find(nums[i]) != kNums.end()) {
+                return true;
+            }
+            
+            kNums.insert(nums[i]);
         }
         
         return false;

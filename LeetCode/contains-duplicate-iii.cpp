@@ -21,19 +21,13 @@ private:
                 latestNums.erase(nums[i - k - 1]);
             }
             
-			      if (k <= 2 * t) { //If t is int, 2 * t may overflow, so convert it to long long
-				      for (auto iter = latestNums.begin(); iter != latestNums.end(); iter++) {
-                    if (abs((long long)*iter - nums[i]) <= t) {
-                        return true;
-                    }
-                }
-            } else {
-                for (int j = 0; j <= t; j++) {
-                    if (latestNums.find(nums[i] + j) != latestNums.end() || latestNums.find(nums[i] - j) != latestNums.end()) {
-                        return true;
-                    }
-                }
-            }
+            //Is there any number in the set which >= nums[i] - t?
+			auto iter = latestNums.lower_bound(nums[i] - t);
+			//The iter from set is internally sorted, so just need to check the first number
+			//If this number > nums[i] + t, then there is no number that drops into [num[i]-t, nums[i]+t];
+			if (iter != latestNums.end() && *iter <= nums[i] + t) {
+			    return true;
+			}
             
             latestNums.insert(nums[i]);
         }

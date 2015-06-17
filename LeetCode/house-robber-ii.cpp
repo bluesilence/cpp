@@ -4,34 +4,32 @@ public:
         if (nums.empty())
             return 0;
         
-        const int N = nums.size();
+        if (nums.size() == 1)
+            return nums[0];
+            
+        return max(robInRange(nums, 0, nums.size() - 2), robInRange(nums, 1, nums.size() - 1));
+    }
+        
+private:
+    int robInRange(vector<int>& nums, const int start, const int end) {
+        if (start < 0 || end >= nums.size() || end < start)
+            return 0;
+        
+        if (start == end)
+            return nums[start];
+            
+        const int N = end - start + 1;
         vector<int> dp(N, 0);
         
-        int maxMoney = 0;
-        for (int i = 0; i < N; i++) {
-            fill(dp.begin(), dp.end(), 0);
-            dp[0] = nums[i];    //Rob from house i
-            
-            for (int j = i + 1; j < i + N; j++) {
-                int dpIndex = (j - i) % N;
-				        int houseIndex = j % N;
-                
-                if (dpIndex == N - 1) {  //Cannot rob last house since the first house has already been robbed and the two are neighbours
-                    dp[dpIndex] = dp[dpIndex-1];
-                } else {
-                    if (dpIndex >= 2) {
-                        dp[dpIndex] = max(dp[dpIndex-2] + nums[houseIndex], dp[dpIndex-1]);
-                    } else {
-                        dp[dpIndex] = max(nums[houseIndex], dp[dpIndex-1]);
-                    }
-                }
-            }
-            
-            if (dp[N-1] > maxMoney) {
-                maxMoney = dp[N-1];
+        dp[0] = nums[start];
+        for (int i = 1; i < N; i++) {
+            if (i > 1) {
+                dp[i] = max(dp[i-2] + nums[start + i], dp[i-1]);
+            } else {
+                dp[i] = max(dp[i-1], nums[start + i]);
             }
         }
         
-        return maxMoney;
+        return dp[N-1];
     }
 };

@@ -1,62 +1,76 @@
+struct Graph {
+    int vertices;
+    //adjs stores the prosteriors of each course
+    vector<int> *adjs;
+    
+    Graph(int v) {
+        vertices = v;
+        adjs = new vector<int>[vertices];
+    }
+    
+    //src: posterior course;
+    //dest: prior course
+    void addedges(int src, int dest) {
+        adjs[dest].push_back(src);
+    }
+};
+
 class Solution {
 public:
     vector<int> findOrder(int numCourses, vector<pair<int, int>>& prerequisites) {
-		vector<int> result;
-
-        if (numCourses < 2 || prerequisites.empty())
-            return result;
-        
-        map<int, unordered_set<int>> adjs;
-        vector<bool> canBeStart(numCourses, true);
+        Graph g(numCourses);
         
         for (int i = 0; i < prerequisites.size(); i++) {
-            adjs[prerequisites[i].second].insert(prerequisites[i].first);
-            canBeStart[prerequisites[i].first] = false;
-        }
-            
-        vector<int> visited(numCourses, 0);
-        
-        for (int i = 0; i < numCourses; i++) {
-            if (canBeStart[i]) {
-                DFSCheckCircle(adjs, result, visited, i);
-				        if (result.empty())
-					        break;
-            }
+            g.addedges(prerequisites[i].first, prerequisites[i].second);
         }
         
-        for (int i = 0; i < numCourses; i++) {
-            if (visited[i] != 2) {
-                result.clear();
-				        break;
-			      }
+        vector<int> result;
+        stack<int> s;
+        
+        if(!courseScheduleCheck(g, s))
+            return result;
+        
+        while(!s.empty()) {
+            result.push_back(s.top());
+            s.pop();
         }
         
-        return result;
+        return result;       
     }
-
-private:
-    void DFSCheckCircle(map<int, unordered_set<int>> &adjs, vector<int> &result, vector<int> &visited, int startingCourse) {
-        if (adjs.empty() || startingCourse < 0 || startingCourse >= visited.size())
-            return;
+    
+    bool courseScheduleCheck(Graph &g, stack<int> &s) {
+        int v = g.vertices;    
+        vector<char> visited(v, 'w'); //'white': node not visited
         
-        visited[startingCourse] = 1;
-		    result.push_back(startingCourse);
-        
-        if (adjs.find(startingCourse) != adjs.end()) {
-            unordered_set<int> dependents = adjs[startingCourse];
-            for (auto iter = dependents.begin(); iter != dependents.end(); iter++) {
-                if (visited[*iter] == 0) {
-                    DFSCheckCircle(adjs, result, visited, *iter);
-                    if (result.empty()) {
-                        return;
-                    }
-                } else if (visited[*iter] == 1) {
-					          result.clear();
-                    return;
+        for (int i = 0; i < g.vertices; i++) {        
+            if (visited[i] == 'w') {
+                if (iscycle(g, i, visited, s)) {
+                    return false;
                 }
             }
         }
         
-        visited[startingCourse] = 2;
+        return true;
+    }
+    
+    bool iscycle(Graph &g, int i, vector<char>& visited, stack<int> &s) {
+        visited[i] = 'g';    //visiting node i
+        
+        for (auto iter = g.adjs[i].begin(); iter != g.adjs[i].end(); iter++) {
+            if (visited[*iter] == 'g') { //'grey': node is being visiting as prior course
+                return true;    //Found a cycle
+            } else if (visited[*iter] == 'w') {
+                if (iscycle(g, *iter, visited, s)) {   //Recursively DFS from node *iter
+                    return true;
+                }
+            }     
+        }
+        
+        //'black': All the posteriors of course i have been visited, and no cycle found
+        visited[i] = 'b';
+        
+        s.push(i);
+        
+        return false;
     }
 };

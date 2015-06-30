@@ -1,3 +1,5 @@
+//Best solution:
+//https://leetcode.com/discuss/32361/o-1-unordered_map-list-splice
 class LRUCache{
 public:
     LRUCache(int capacity) {

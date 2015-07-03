@@ -1,40 +1,30 @@
 class Solution {
 public:
-    int canCompleteCircuit(vector<int> &gas, vector<int> &cost) {
-        int n = gas.size();
-        if (n < 1)
+    int canCompleteCircuit(vector<int>& gas, vector<int>& cost) {
+        if (gas.empty() || cost.empty() || gas.size() != cost.size())
             return -1;
-        else {
-            vector<int> netGas;
-            for (int i = 0; i < n; i++) {
-                netGas.push_back(gas[i] - cost[i]);
+        
+        const int N = gas.size();
+        
+        int startingIndex = 0;
+        
+        while (startingIndex < N) {
+            int gasLeft = 0;
+			int travelledStations = 0;
+			
+            for (; travelledStations < N; travelledStations++) {
+                int currentIndex = (startingIndex + travelledStations) % N;
+                gasLeft += gas[currentIndex] - cost[currentIndex];
+                if (gasLeft < 0)
+                    break;
             }
             
-            int gasInCar = 0;
-            int i = 0;  //Index of current gas station
-            int begin = 0;
-            int end = 0;
-            do {
-                gasInCar += netGas[i];
-                if (gasInCar < 0) { //Moving backward
-                    begin--;
-                    if (begin < 0)
-                        begin = n - 1;
-                        
-                    i = begin;
-                } else {    //Moving forward
-                    end++;
-                    if (end == n)
-                        end = 0;
-                    
-                    i = end;
-                }
-            } while (begin != end);
+            if (travelledStations == N)
+                return startingIndex;
                 
-            if (gasInCar >= 0)   //Valid
-                return begin;
-            else
-                return -1;
+            startingIndex += travelledStations + 1;
         }
+        
+        return -1;
     }
 };

@@ -10,33 +10,37 @@
 class BSTIterator {
 public:
     BSTIterator(TreeNode *root) {
-        inOrderTraverse(root);
-        current = 0;
+        pushLeft(root);
     }
 
     /** @return whether we have a next smallest number */
     bool hasNext() {
-        return current < inOrderTraversal.size();
+        return !s.empty();
     }
 
     /** @return the next smallest number */
     int next() {
-        return inOrderTraversal[current++]->val;
+        TreeNode *tmp = s.top();
+        s.pop();
+        
+        //Push the right subtree of tmp. These numbers are greater than tmp->val, but smaller than s.top()->val.
+        pushLeft(tmp->right);
+        
+        return tmp->val;
     }
 
 private:
-    vector<TreeNode*> inOrderTraversal;
-    int current;
+    stack<TreeNode*> s;
     
-    void inOrderTraverse(TreeNode* root) {
+    //The top of stack is always the next smallest number
+    void pushLeft(TreeNode* root) {
         if (!root)
             return;
         
-        inOrderTraverse(root->left);
-        
-        inOrderTraversal.push_back(root);
-        
-        inOrderTraverse(root->right);
+        while (root) {
+            s.push(root);
+            root = root->left;
+        }
     }
 };
 

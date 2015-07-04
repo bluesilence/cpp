@@ -1,23 +1,26 @@
 class Solution {
 public:
-    int findMin(vector<int> &num) {
-        int start = 0;
-        int end = num.size() - 1;
-        int mid = (start + end) / 2;
+    int findMin(vector<int>& nums) {
+        int begin = 0;
+        int end = nums.size() - 1;
+        int mid;
         
-        while (start < end) {
-            if (start == end || num[start] < num[end])  //the sub array is already sorted
-                return num[start];
-            else if (num[mid] > num[start]) //mid in first half  
-                start = mid + 1;
-            else if (num[mid] < num[end])   //mid in second half
-                end = mid;
-            else //num[mid] == num[start] || num[mid] == num[end]
-                start++;
+        while (begin < end) {
+            //The subsequence is already sorted
+            if (nums[begin] < nums[end])    //Necessary; otherwise when nums[begin] == nums[mid], L23 will skip the minimum number
+                return nums[begin];
+                
+            mid = (begin + end) / 2;
             
-            mid = (start + end) / 2;
+            if (nums[mid] > nums[begin]) {
+                begin = mid + 1;
+            } else if (nums[mid] < nums[end]) {
+                end = mid;
+            } else {
+                begin++;
+            }
         }
         
-        return num[start];
+        return nums[begin];
     }
 };

@@ -10,57 +10,36 @@
 class BSTIterator {
 public:
     BSTIterator(TreeNode *root) {
-        p = new TreeNode(0);    //Dummy head
-        p->right = root;
+        inOrderTraverse(root);
+        current = 0;
     }
 
     /** @return whether we have a next smallest number */
     bool hasNext() {
-        /*
-         * If p has right child, the next node should be the most left bottom node in its right subtree
-         * Else if p is the left child of its parent, the next node should be its parent node
-         * Else, p is the right child of its parent, the next node should be the lowest parent which is the left child of its parent
-         */
-        if (p->right) {
-            hierarchy.push(p);
-            p = p->right;
-            while (p && p->left) {
-                hierarchy.push(p);
-                p = p->left;
-            }
-        } else if (!hierarchy.empty()) {
-            parent = hierarchy.top();
-            hierarchy.pop();
-            if (parent->left == p) {
-                p = parent;
-            } else {
-                while (parent->left != p && !hierarchy.empty()) {
-                    p = parent;
-                    parent = hierarchy.top();
-                    hierarchy.pop();
-                };
-                
-                if (parent->left == p)
-                    p = parent;
-                else
-                    p = NULL;
-            }
-        } else {
-            p = NULL;
-        }
-        
-        return p != NULL;
+        return current < inOrderTraversal.size();
     }
 
     /** @return the next smallest number */
     int next() {
-        return p->val;
+        return inOrderTraversal[current++]->val;
     }
 
 private:
-    stack<TreeNode*> hierarchy;
-    TreeNode *p, *parent;
+    vector<TreeNode*> inOrderTraversal;
+    int current;
+    
+    void inOrderTraverse(TreeNode* root) {
+        if (!root)
+            return;
+        
+        inOrderTraverse(root->left);
+        
+        inOrderTraversal.push_back(root);
+        
+        inOrderTraverse(root->right);
+    }
 };
+
 /**
  * Your BSTIterator will be called like this:
  * BSTIterator i = BSTIterator(root);

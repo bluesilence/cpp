@@ -8,15 +8,15 @@
  */
 class Solution {
 public:
-    ListNode *sortList(ListNode *head) {
-        if(NULL == head || NULL == head->next)
+    ListNode* sortList(ListNode* head) {
+        //O(nlogn) time complexity implies MergeSort
+        if (!head || !head->next)
             return head;
-            
+        
         ListNode *mid = getMiddleNode(head);
         ListNode *right = mid->next;
-        mid->next = NULL; //Break 1 list into 2
+        mid->next = NULL;
         
-        //recursively call
         return mergeSort(sortList(head), sortList(right));
     }
 
@@ -24,32 +24,52 @@ private:
     ListNode *getMiddleNode(ListNode *head) {
         ListNode *slow, *fast;
         slow = fast = head;
-        while(NULL != fast && NULL != fast->next && NULL != fast->next->next) {
-            fast = fast->next->next;
+        
+        while (fast && fast->next && fast->next->next) {
             slow = slow->next;
+            fast = fast->next->next;
         }
         
         return slow;
     }
     
-    ListNode *mergeSort(ListNode *left, ListNode *right) {
-        ListNode *head = new ListNode(-1); //Dummy head
-        ListNode *cur = head;
+    ListNode *mergeSort(ListNode *l1, ListNode *l2) {
+        if (!l1)
+            return l2;
+            
+        if (!l2)
+            return l1;
         
-        while(NULL != left && NULL != right) {
-            if(left->val < right->val) {
-                cur->next = left;
-                left = left->next;
+        ListNode *dummyHead = new ListNode(0);
+        ListNode *p = dummyHead;
+        
+        ListNode *p1 = l1;
+        ListNode *p2 = l2;
+        
+        while (p1 && p2) {
+            if (p1->val <= p2->val) {
+                p->next = p1;
+                p1 = p1->next;
             } else {
-                cur->next = right;
-                right = right->next;
+                p->next = p2;
+                p2 = p2->next;
             }
             
-            cur = cur->next;
+            p = p->next;
         }
         
-        cur->next = NULL != left ? left : right;
+        if (p1) {
+            p->next = p1;
+        }
         
-        return head->next;
+        if (p2) {
+            p->next = p2;
+        }
+        
+        p = dummyHead->next;
+        
+        delete dummyHead;
+        
+        return p;
     }
 };

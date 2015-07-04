@@ -1,26 +1,20 @@
 class Solution {
 public:
-    int singleNumber(int A[], int n) {
-        return singleNumberCore(A, n, 3);
-    }
-    
-private:
-    int singleNumberCore(const int A[], const int n, const int k) {
-        if (!A)
-            return 0;
+    int singleNumber(vector<int>& nums) {
+        //Count how many 1s each bit has after summing up the whole array
+        //count % 3 is the bit contributed by the exceptional number
+        const int BITS_LEN = 8 * sizeof(int);
+        vector<int> bitCounts(BITS_LEN, 0);
+        const int N = nums.size();
         
-        if (n < k)
-            return A[0];
-        
-        int bits[32] = { 0 };
         int result = 0;
         
-        for (int i = 0; i < 32; i++) {
-            for (int j = 0; j < n; j++) {
-                bits[i] += (A[j] >> i) & 1;
+        for (int i = 0; i < BITS_LEN; i++) {
+            for (int j = 0; j < N; j++) {
+                bitCounts[i] += (nums[j] >> i) & 1;
             }
             
-            result |= (bits[i] % k) << i;
+            result |= (bitCounts[i] % 3) << i;
         }
         
         return result;

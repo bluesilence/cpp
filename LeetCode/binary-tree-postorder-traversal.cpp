@@ -1,5 +1,5 @@
 /**
- * Definition for binary tree
+ * Definition for a binary tree node.
  * struct TreeNode {
  *     int val;
  *     TreeNode *left;
@@ -9,40 +9,39 @@
  */
 class Solution {
 public:
-    vector<int> postorderTraversal(TreeNode *root) {
-        //Use a stack to record the sequence of nodes to be printed, and a stack to record the readiness of a node to be printed
-        //A node can be printed after all its left and right children have been printed
+    vector<int> postorderTraversal(TreeNode* root) {
         vector<int> results;
         
-        stack<TreeNode*> nodeStack;
-        stack<bool> readyStack;
-        TreeNode *node = root;
-        
-        while (NULL != node || !nodeStack.empty()) {
-            //Push root and it's left children into stack to form an output sequence
-            while (NULL != node) {
-                nodeStack.push(node);
-                readyStack.push(false);
-                node = node->left;
+        while (root || !s.empty()) {
+            while (root) {
+                s.push(root);
+                canVisitRoot.push(false);
+                root = root->left;
             }
             
-            //Output all the ready-for-output nodes in the stack
-            while (!nodeStack.empty() && readyStack.top() == true) {
-                TreeNode *tmp = nodeStack.top();
-                results.push_back(tmp->val);
-                nodeStack.pop();
-                readyStack.pop();
+            //If canVisitRoot.top() == true, then all the subtrees of s have been visited (otherwise there will be false elements on top of canVisitRoot), so we can now push the top of s into results
+            while (!s.empty() && canVisitRoot.top()) {
+                root = s.top();
+                s.pop();
+                canVisitRoot.pop();
+                
+                results.push_back(root->val);
+                root = NULL;    //Necessary: otherwise the outer loop will always have root != NULL
             }
             
-            //All the left subtree has been outputed, ready to output the parent node.
-            //But before that, let's traverse its right subtree
-            if (!nodeStack.empty()) {
-                readyStack.pop();
-                readyStack.push(true);
-                node = nodeStack.top()->right;
+            if (!s.empty()) {
+                root = s.top();
+                canVisitRoot.pop();
+                canVisitRoot.push(true);
+                
+                root = root->right;
             }
         }
         
         return results;
     }
+
+private:
+    stack<TreeNode*> s;
+    stack<bool> canVisitRoot;
 };

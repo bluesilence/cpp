@@ -1,25 +1,17 @@
 class Solution {
 public:
     int trailingZeroes(int n) {
-        //Count how many 5s and 2s that are in the multiplication of n!
-        //The zeros number = min(5s, 2s)
-        int count2s = 0, count5s = 0;
+        //The count of zeroes is capped by the count of 5s in all numbers from 1 to n
+        //If a number is times of 5 but not times of 5 * 5, it contributes 1 '0' to the total counts
+        //If a number is times of 5 * 5 but not times of 5 * 5 * 5, it contributes 2 '0's to the total counts
+        //Thus, the total count of zeroes = # numbers which is times of 5 + # numbers which is times of 5 * 5 (1 among the 2 contributions of 5s is included in previous # as times of 5) + ...
+        int count = 0;
         
-        int num;
-        for (int i = 1; i <= n; i++) {
-            num = i;
-            while (num % 2 == 0) {
-                count2s ++;
-                num /= 2;
-            }
-            
-            num = i;
-            while (num % 5 == 0) {
-                count5s ++;
-                num /= 5;
-            }
+        while (n) {
+            count += n / 5;
+            n /= 5;
         }
         
-        return min(count2s, count5s);
+        return count;
     }
 };

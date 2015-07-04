@@ -9,35 +9,38 @@
 class Solution {
 public:
     RandomListNode *copyRandomList(RandomListNode *head) {
-        if (!head)
-            return NULL;
-            
-        map<RandomListNode*, RandomListNode*> mappings;
+        //Use a map to store the mapping between original node and copied node
+        unordered_map<RandomListNode*, RandomListNode*> mappings;
         
-        //First copy the next nodes
-        RandomListNode *p = head;
-        RandomListNode *copyHead = new RandomListNode(head->label);
-        RandomListNode *q = copyHead;
+        RandomListNode *dummyHead = new RandomListNode(0);
+        RandomListNode *pCopy = dummyHead;
         
-        while (p) {
-            if (p->next)
-                q->next = new RandomListNode(p->next->label);
-                
-            q->random = p->random;
-            mappings[p] = q;
+        RandomListNode *pOrigin = head;
+        
+        while (pOrigin) {
+            RandomListNode *newNode = new RandomListNode(pOrigin->label);
+            pCopy->next = newNode;
             
-            p = p->next;
-            q = q->next;
+            mappings[pOrigin] = newNode;
+            
+            pOrigin = pOrigin->next;
+            pCopy = pCopy->next;
         }
         
-        //Next copy the random nodes
-        p = head;
-        q = copyHead;
-        while (q) {
-            q->random = mappings[q->random];
-            q = q->next;
+        pOrigin = head;
+        pCopy = dummyHead->next;
+        
+        while (pOrigin) {
+            pCopy->random = mappings[pOrigin->random];
+            
+            pOrigin = pOrigin->next;
+            pCopy = pCopy->next;
         }
         
-        return copyHead;
+        pCopy = dummyHead->next;
+        
+        delete dummyHead;
+        
+        return pCopy;
     }
 };

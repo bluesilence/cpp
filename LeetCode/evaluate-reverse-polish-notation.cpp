@@ -1,95 +1,68 @@
 class Solution {
 public:
-    int evalRPN(vector<string> &tokens) {
-        //Use stack to store each token.
-        //Whenever the top is an operand, calculate the expression with the top 3 tokens, then push result into the stack.
-        stack<int> cache;
-
-        for(int i = 0 ; i < tokens.size(); i++){
-            if(tokens[i] == "+" || tokens[i] == "-" || tokens[i] == "*" || tokens[i] == "/") {
-                int num2 = cache.top();
-                cache.pop();
-                int num1 = cache.top();
-                cache.pop();
-                cache.push(calculate(num1, num2, tokens[i]));
+    int evalRPN(vector<string>& tokens) {
+        long long result = 0;
+        
+        stack<long long> s;
+        
+        const int N = tokens.size();
+        
+        for (int i = 0; i < N; i++) {
+            if (tokens[i] == "+" || tokens[i] == "-" || tokens[i] == "*" || tokens[i] == "/") {
+                if (s.size() < 2)
+                    throw "Invalid expression";
+                
+                //The later num is on the top of stack due to FILO
+                long long num2 = s.top();
+                s.pop();
+                long long num1 = s.top();
+                s.pop();
+                
+                long long tmp = 0;
+                if (tokens[i] == "+") {
+                    tmp = num1 + num2;
+                } else if (tokens[i] == "-") {
+                    tmp = num1 - num2;
+                } else if (tokens[i] == "*") {
+                    tmp = num1 * num2;
+                } else {
+                    tmp = num1 / num2;
+                }
+                
+                s.push(tmp);    //Push result back as the operand for next operator
             } else {
-                cache.push(strToInt(tokens[i]));
+                s.push(atol(tokens[i]));
             }
         }
-
-        return cache.top();
-    }
-    
-private:
-    int strToInt(string str) {
-        bool positive = true;
-        int start = 0;
-        if(str[start] == '-') {
-            positive = false;
-            start++;
-        } else if(str[start]=='+') {
-            start++;
-        } 
         
-        int result = 0;
-        while(start < str.size()) {
-            result *= 10;
-            result += (str[start] - '0');
-            start++;
-        };
+        if (!s.empty())
+            result = s.top();
         
-        if(!positive)
-            result *= -1;
-        
-        return result;
-    }
-    
-    string intToStr(int v) {
-        bool positive = true;
-        if(v < 0) {
-            positive = false;
-            v *= -1;
-        }
-        
-        string str;
-        while(v > 0) {
-            str.push_back(v % 10 + '0');
-            v/=10;
-        }
-        
-        if(str.size() == 0)
-            str.push_back('0');
-        if(!positive)
-            str.push_back('-');
-        
-        for(int i = 0;i < str.size()/2; i++) {
-            char c = str[i];
-            str[i] = str[str.size() - 1 - i];
-            str[str.size() - 1 - i] = c;
-        }
-        
-        return str;
-    }
-    
-    int calculate(int num1, int num2, string operation) {
-        int result = 0;
-        if(operation == "+")  {
-             result = num1 + num2;
-        } else if(operation == "-") {
-            result = num1 - num2;
-        } else if(operation == "*") {
-            result = num1 * num2;
-        } else {
-            result = num1 / num2;
-        }
-        
-        return result;
-    }
-    
-    bool isInteger(string s) {
-        if(s == "+" || s == "-" || s == "*" || s == "/")
-            return false;
+        if (result > INT_MAX)
+            return INT_MAX;
+        else if (result < INT_MIN)
+            return INT_MIN;
         else
-    	    return true;
+            return result;
+    }
+
+private:
+    long long atol(string token) {
+        long long num = 0;
+        
+        const int LEN = token.size();
+        int sign = 1;
+        
+        if (token[0] == '-')
+            sign = -1;
+            
+        for (int i = 0; i < LEN; i++) {
+            if (token[i] <= '9' && token[i] >= '0') {   //Omitted verification of validity here
+                num *= 10;
+                num += token[i] - '0';
+            }
+        }
+        
+        return sign * num;
     }
 };

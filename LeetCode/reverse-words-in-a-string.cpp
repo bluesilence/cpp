@@ -1,59 +1,57 @@
 class Solution {
 public:
     void reverseWords(string &s) {
-        //Reverse each word seperated by space
-        int begin = 0, end = 0;
-        while (begin < s.size() && s[begin] == ' ')
-            begin++;
-                    
-        if (begin == s.size()) //All spaces
-            s = "";
+        //Scan the string and locate each word, overwrite redundant spaces along the way
+        //Use 2 indices, 1 points to the beginning of a word, 1 points to the end
+        //Reverse each word once the end pointer reaches a space
+        //After the whole string is scanned, reverse it as result
+        int scan = 0;
+        int begin = 0;
+        int end = 0;
         
-        end = begin;
-        while (end < s.size()) {
-            while (end < s.size() && s[end] != ' ')
-                end++;
+        //sentinel for the last word
+        if (s[s.size() - 1] != ' ') {
+            s.push_back(' ');
+        }
+        
+        const int N = s.size();
+        
+        while (scan < N) {
+            while (s[scan] == ' ') {
+                scan++;
+            }
             
-            reverse(s, begin, end - 1);
-            if (end < s.size()) {
-                //Skip the spaces between words
-                while (end < s.size() && s[end] == ' ')
-                    end++;
-                    
+            while (scan < N && s[scan] != ' ') {
+                s[end++] = s[scan++];
+            }
+            
+            if (scan < N) { //s[scan] == ' '
+                reverse(s, begin, end - 1);
+                s[end] = ' ';   //Separation between 2 words
+                end++;  //Locate to the beginning of next word after trim
                 begin = end;
             }
         }
         
-        //Reverse the whole sentence
-        reverse(s, 0, s.size() - 1);
+        if (end >= 2)
+            s = s.substr(0, end - 2 + 1);
+        else
+            s = "";
         
-        //Trim spaces
-        begin = 0;
-        end = s.size() - 1;
-        while (begin < s.size() && s[begin] == ' ')
-            begin++;
-        
-        while (end > begin && s[end] == ' ' )
-            end--;
-            
-        string ss;
-        for (int i = begin; i <= end; i++) {
-            if (s[i] != ' ' || (i > 0 && s[i-1] != ' '))    //Trim duplicate spaces between words
-                ss.push_back(s[i]);
-        }
-        
-        s = ss;
+        if (s.size() > 1)
+            reverse(s, 0, s.size() - 1);
     }
 
 private:
     void reverse(string &s, int begin, int end) {
-        if (begin < 0 || end >= s.size() || begin >= end)
+        if (begin < 0 || end >= s.size())
             return;
-            
+        
         while (begin < end) {
             char tmp = s[begin];
             s[begin] = s[end];
             s[end] = tmp;
+            
             begin++;
             end--;
         }

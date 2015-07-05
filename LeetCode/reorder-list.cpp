@@ -8,48 +8,55 @@
  */
 class Solution {
 public:
-    void reorderList(ListNode *head) {
+    void reorderList(ListNode* head) {
         if (!head || !head->next)
             return;
         
-        //Split the list into 2 parts
-        ListNode *slow, *fast;
+        ListNode *slow;
+        ListNode *fast;
         slow = fast = head;
+        
         while (fast && fast->next && fast->next->next) {
-            slow = slow->next;
             fast = fast->next->next;
+            slow = slow->next;
         }
         
-        ListNode *firstHalf = head, *secondHalf = slow->next;
-        slow->next = NULL;
+        ListNode *right = slow->next;   //The right half
+        slow->next = NULL;  //Split the left half
         
-        //For the 2nd half, reorder it using head insertion
-        ListNode *pre, *p, *tmp;
-        pre = secondHalf;
-        p = pre->next;
-        pre->next = NULL;
+        reverseList(right);
         
-        while (p) {
-            tmp = p->next;
-            p->next = pre;
-            pre = p;
-            p = tmp;
+        ListNode *p = head;
+        ListNode *q = right;
+        
+        //Right half is always (0~1) node shorter than left half
+        while (q) {
+            ListNode *pTmp = p->next;
+            ListNode *qTmp = q->next;
+            
+            p->next = q;
+            q->next = pTmp;
+            p = pTmp;
+            q = qTmp;
+        }
+    }
+
+private:
+    void reverseList(ListNode* &head) {
+        if (!head || !head->next)
+            return;
+        
+        ListNode *pre = NULL;
+        ListNode *curr = head;
+        ListNode *post = NULL;
+        
+        while (curr) {
+            post = curr->next;
+            curr->next = pre;
+            pre = curr;
+            curr = post;
         }
         
-        secondHalf = pre;
-        
-        //Link the 2 lists together
-        ListNode *fp, *sp;
-        ListNode *fTmp, *sTmp;
-        fp = firstHalf;
-        sp = secondHalf;
-        while (fp && sp) {
-            fTmp = fp->next;
-            sTmp = sp->next;
-            fp->next = sp;
-            sp->next = fTmp;
-            fp = fTmp;
-            sp = sTmp;
-        }
+        head = pre;
     }
 };

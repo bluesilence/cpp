@@ -1,23 +1,25 @@
 class Solution {
 public:
-    string largestNumber(vector<int> &num) {
+    string largestNumber(vector<int>& nums) {
         vector<string> strs;
-        for_each(num.begin(), num.end(), [&](int i) {
-            strs.push_back(to_string(i));
-        });
         
-        //If a concats b > b concats a, put a before b
-        sort(strs.begin(), strs.end(), [&](const string& a, const string& b) {
-           return (a + b) > (b + a); 
+        const int N = nums.size();
+        for (int i = 0; i < N; i++) {
+            strs.push_back(to_string(nums[i]));
+        }
+        
+        sort(strs.begin(), strs.end(), [&](const string& s1, const string& s2) {
+            return (s1 + s2) > (s2 + s1);
         });
         
         string result = "";
-        for_each(strs.begin(), strs.end(), [&](string& s) {
-            if (result == "" && s == "0")  //Largest number is 0
-                return;
-            result += s;
-        });
+        for (int i = 0; i < N; i++) {
+            result += strs[i];
+            if (result == "0") {
+                break;  //The maximum number is 0, then the following numbers are all 0, avoid duplicate "0"s
+            }
+        }
         
-        return result == "" ? "0" : result;
+        return result;
     }
 };

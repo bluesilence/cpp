@@ -1,10 +1,14 @@
 class Solution {
 public:
     int titleToNumber(string s) {
-        int result = 0;
-        for (int i = 0; i < s.size(); i++) {
+        long long result = 0;
+        const int LEN = s.size();
+        
+        for (int i = 0; i < LEN; i++) {
             result *= 26;
             result += s[i] - 'A' + 1;
+            if (result > INT_MAX)
+                return INT_MAX;
         }
         
         return result;

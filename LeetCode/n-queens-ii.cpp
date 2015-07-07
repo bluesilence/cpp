@@ -1,35 +1,40 @@
 class Solution {
 public:
     int totalNQueens(int n) {
-        if (n < 1)
+        if (n <= 0)
             return 0;
         
-        vector<int> rowForQueens(n, -1);
+        vector<int> rowOfQueens(n, 0);
         
-        return countQueens(rowForQueens, n);
+        return countSolutions(rowOfQueens, n, n - 1);
     }
     
 private:
-    int countQueens(vector<int> &rowForQueens, const int n, int col = 0) {
-        int sum = 0;
+    int countSolutions(vector<int> &board, const int n, int index) {
+        long long count = 0;
+        
         for (int i = 0; i < n; i++) {
-            if (isValid(rowForQueens, col, i)) {
-                rowForQueens[col] = i;
-                if (col + 1 < n)
-                    sum += countQueens(rowForQueens, n, col + 1);
-                else
-                    sum += 1;
+            board[index] = i;
+            if (isValid(board, n, index)) {
+                if (index > 0) {
+                    count += countSolutions(board, n, index - 1);
+                } else {
+                    count += 1;
+                }
             }
         }
         
-        return sum;
+        return count > INT_MAX ? INT_MAX : count;
     }
     
-    bool isValid(vector<int> &rowForQueens, const int col, const int row) {
-        for (int i = 0; i < col; i++) {
-            if (row == rowForQueens[i] ||
-                rowForQueens[i] - row == i - col ||
-                rowForQueens[i] - row == col - i)
+    bool isValid(vector<int> &board, const int n, int index) {
+        if (board.size() < n || index < 0 || index >= n)
+            return false;
+        
+        for (int i = index + 1; i < n; i++) {
+            if (board[i] == board[index]
+                || board[index] - board[i] == index - i
+                || board[index] - board[i] == i - index)
                 return false;
         }
         

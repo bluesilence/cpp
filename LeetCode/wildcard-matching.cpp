@@ -1,35 +1,39 @@
 class Solution {
 public:
     bool isMatch(string s, string p) {
-        //Scan each character of s
-        //If s reaches its end && p reaches it end, return true
-        //If current character is '*',
-        //Record the current position of s and p, move p's index forward to continue normal matching
-        //If normal matching failed, reload the position of s and p, move both s's and p's indices forward, record the new position of sIndex, then continue normal matching
+        if (p.empty())
+            return s.empty();
         
-        int sIndex = 0, pIndex = 0;
-        int starIndex = -1;
-        int lastSIndex = -1;
-        while (sIndex < s.size()) {
-            if (s[sIndex] == p[pIndex] || p[pIndex] == '?') {
-                sIndex++;
-                pIndex++;
+        if (s.empty())
+            return p == "*";
+        
+        const int SLEN = s.size();
+        const int PLEN = p.size();
+        
+        int indexS = 0;
+        int indexP = 0;
+        int indexStar = -1;
+        int indexMatchStar = -1;
+        
+        while (indexS < SLEN) {
+            if (s[indexS] == p[indexP] || p[indexP] == '?') {
+                indexS++;
+                indexP++;
                 
                 continue;
             }
             
-            if (p[pIndex] == '*') {
-                starIndex = pIndex;
-                lastSIndex = sIndex;
-                pIndex++;
+            if (p[indexP] == '*') {
+                indexStar = indexP;
+                indexMatchStar = indexS;
+                indexP++;
                 
                 continue;
             }
             
-            if (starIndex > -1 && lastSIndex > -1) {
-                sIndex = lastSIndex + 1;
-                pIndex = starIndex + 1;
-                lastSIndex = sIndex;
+            if (indexStar > -1) {
+                indexS = ++indexMatchStar;
+                indexP = indexStar + 1;
                 
                 continue;
             }
@@ -37,10 +41,10 @@ public:
             return false;
         }
         
-        while (pIndex < p.size() && p[pIndex] == '*') {
-            pIndex++;
+        while (indexP < PLEN && p[indexP] == '*') {
+            indexP++;
         }
         
-        return pIndex == p.size();
+        return indexP == PLEN;
     }
 };

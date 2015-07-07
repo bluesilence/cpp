@@ -1,38 +1,65 @@
 class Solution {
 public:
-  string fractionToDecimal(int numerator, int denominator) {
-    if(numerator==0)
-        return "0";
-    string result;
-    if(numerator < 0 ^ denominator < 0 ) result += '-';   //If either numerator < 0 or denominator < 0, result will be negative
-    //转化为正数，INT_MIN转化为正数会溢出，故用long long。long long int n=abs(INT_MIN)得到的n仍然是负的，所以写成下面的形式。
-    long long int n = numerator, d = denominator;
-    n = abs(n);
-    d = abs(d);			  
-    result += to_string(n / d);  //整数部分
-    long long int r = n % d;	//余数r
-    if(r == 0)
-        return result;
-    else
-        result +='.';
+    string fractionToDecimal(int numerator, int denominator) {
+        //Integral part
+        if (denominator == 0)
+            throw "DivideByZero";
         
-    //下面处理小数部分，用哈希表
-    unordered_map<int,int> map;
-    while (r) {
-      //检查余数r是否在哈希表中，是的话则开始循环了
-      if(map.find(r) != map.end()){
-        result.insert(map[r], 1, '(');   //http://www.cplusplus.com/reference/string/basic_string/insert/
-        result += ')';
-        break;
-      }
-      
-      map[r] = result.size();	//这个余数对应于result的哪个位置
-      //正常运算
-      r *= 10;
-      result += to_string(r / d);
-      r = r % d;
+        if (numerator == 0)
+            return "0";
+        
+        bool signNumerator = numerator > 0;
+        bool signDenominator = denominator > 0;
+        
+        long long numeratorLong = abs((long long)numerator);
+        long long denominatorLong = abs((long long)denominator);
+        
+        string integralPart = to_string(numeratorLong / denominatorLong);
+        
+        //If the signs are different, the result is negative
+        string result = (signNumerator ^ signDenominator) ? "-" : "";
+        result += integralPart;
+        
+        long long rem = numeratorLong % denominatorLong;
+        
+        if (rem == 0)
+            return result;
+        
+        //Fractional part
+        result += '.';
+        
+        int index = 1;
+        
+        //Record the first occurrence of a remainder
+        map<int, int> remPosMap;
+        
+        char digitQuotient;
+        
+        rem *= 10;  //First "* 10" doens't append an extra '0'
+        remPosMap[rem] = result.size(); //Record the start of first remainder
+        
+        while (rem) {
+            while (rem < denominatorLong) {
+                rem *= 10;
+                result += '0';
+                remPosMap[rem] = result.size(); //Remember to record this remainder too!
+            }
+            
+            digitQuotient = rem / denominatorLong + '0';
+            result.push_back(digitQuotient);
+            
+            rem %= denominatorLong;
+            rem *= 10;  //Like L33, form the new numerator
+            
+            if (remPosMap.find(rem) != remPosMap.end()) {
+                result = result.substr(0, remPosMap[rem]) + "(" + result.substr(remPosMap[rem]) + ")";
+                
+                break;
+            } else {
+                remPosMap[rem] = result.size();
+            }
+        }
+
+        return result;
     }
-    
-    return result;
-  }
 };

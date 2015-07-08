@@ -1,60 +1,57 @@
 class Solution {
 public:
-    vector<vector<string> > solveNQueens(int n) {
-        if (n < 1)
-            throw "Queens' number must be positive integer.";
-            
-        vector<vector<string> > results;
+    vector<vector<string>> solveNQueens(int n) {
+        vector<vector<string>> results;
         
-        //Each element's index stands for queen in one column, each element's value stands for queen's row
-        vector<int> positions(n, 0);
+        if (n <= 0)
+            return results;
         
-        vector<string> result(n);
+        vector<int> rowOfQueens(n, 0);
         
-        permutation(results, result, positions, n, 0);
+        findSolutions(results, rowOfQueens, n, 0);
         
         return results;
     }
 
 private:
-    void permutation(vector<vector<string> > &results, vector<string> &result, vector<int> &positions, const int n, int queenCol) {
-        if (queenCol == n) {    //Find one solution
-            fillResult(positions, result);
-            results.push_back(result);
+    void findSolutions(vector<vector<string>> &results, vector<int> &board, const int N, int index) {
+        if (board.size() < N || N < 1 || index < 0 || index > N)
+            return;
+        
+        if (index == N) {
+            collectResult(results, board, N);
         } else {
-            for (int i = 0; i < n; i++) {
-                positions[queenCol] = i;
-                
-                if (isValid(queenCol, positions)) {
-                    permutation(results, result, positions, n, queenCol + 1);
+            for (int i = 0; i < N; i++) {
+                board[index] = i;
+                if (isValid(board, N, index)) {
+                    findSolutions(results, board, N, index + 1);
                 }
             }
         }
     }
     
-    //Check if 1 queen is valid against queens in columns before her, which are already permuted
-    bool isValid(int col, vector<int> &positions) {
-        if (col < 0 || col >= positions.size())
+    bool isValid(vector<int> &board, const int N, int index) {
+        if (board.size() < N || N < 1 || index < 0 || index >= N)
             return false;
-            
-        //Check diagonals
-        for (int i = 0; i < col; i++) {
-            if (positions[i] == positions[col] || abs(positions[i] - positions[col]) == (col - i))
+        
+        for (int i = 0; i < index; i++) {
+            if (board[i] == board[index] || board[index] - board[i] == index - i || board[index] - board[i] == i - index)
                 return false;
         }
         
         return true;
     }
     
-    void fillResult(vector<int> &positions, vector<string> &result) {
-        std::fill(result.begin(), result.end(), string(result.size(), '.'));    //Initialization
-            
-        int row, col;
+    void collectResult(vector<vector<string>> &results, vector<int> &board, const int N) {
+        if (board.size() < N)
+            return;
         
-        for (int i = 0; i < positions.size(); i++) {
-            row = positions[i];
-            col = i;
-            result[row][col] = 'Q';
+        vector<string> result(N, string(N, '.'));
+        
+        for (int i = 0; i < N; i++) {
+            result[board[i]][i] = 'Q';
         }
+        
+        results.push_back(result);
     }
 };

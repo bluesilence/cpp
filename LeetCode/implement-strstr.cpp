@@ -2,61 +2,65 @@ class Solution {
 public:
     //The best video to learn kmp: https://www.quora.com/What-is-the-best-resource-to-learn-KMP-Algorithm
     int strStr(string haystack, string needle) {
-        if (needle.empty())
+        if (needle.empty()) {
             return 0;
+        }
         
-        if (haystack.empty())
+        if (haystack.empty()) {
             return -1;
+        }
         
-        vector<int> next(needle.size(), 0);
+        const int M = haystack.size();
+        const int N = needle.size();
         
-        genNext(needle, next);
+        vector<int> next(N, -1);
         
-        int hIndex = 0;
-        int nIndex = 0;
+        genNext(needle, N, next);
         
-        while (nIndex < needle.size() && hIndex < haystack.size()) {
-            if (needle[nIndex] == haystack[hIndex]) {
-                nIndex++;
-                hIndex++;
+        int i = 0;
+        int j = 0;
+        
+        while (i < M && j < N) {
+            if (haystack[i] == needle[j]) {
+                i++;
+                j++;
             } else {
-                if (nIndex == 0) {
-                    hIndex++;
+                if (j == 0) {
+                    i++;
                 } else {
-                    while (nIndex > 0 && needle[nIndex] != haystack[hIndex]) {
-                        nIndex = next[nIndex-1] + 1;
+                    while (j > 0 && needle[j] != haystack[i]) {
+                        j = next[j-1] + 1;
                     }
                 }
             }
         }
         
-        if (nIndex == needle.size()) {
-            return hIndex - nIndex;
-        } else {    //Not found
+        if (j == N)
+            return i - j;
+        else
             return -1;
-        }
     }
 
 private:
-    void genNext(string &needle, vector<int> &next) {
+    void genNext(string &needle, const int N, vector<int> &next) {
+        if (needle.empty())
+            return;
+        
         next[0] = -1;
         
         int i = 1;
         int j = 0;
         
-        while (i < needle.size()) {
+        while (i < N) {
             if (needle[i] == needle[j]) {
-                next[i] = j;
-                i++;
-                j++;
+                next[i++] = j++;
             } else {
-                while (j > 0 && needle[i] != needle[j]) {
-                        j = next[j-1] + 1;
-                }
-                
                 if (j == 0) {
-                    next[i] = -1;
-                    i++;
+                    next[i++] = -1;
+                } else {
+                    while (j > 0 && needle[j] != needle[i]) {
+                        j = next[j-1] + 1;
+                    }
                 }
             }
         }

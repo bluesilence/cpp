@@ -13,19 +13,18 @@ public:
         if (!root)
             return 0;
         
-        int rightDepth = countRightDepth(root);
         int leftDepth = countLeftDepth(root);
+        int rightDepth = countRightDepth(root);
         
-        if (rightDepth == leftDepth) {
-            int count = 0;
-            for (int i = 0; i <= leftDepth; i++) {
-                count += pow(2, i);
-            }
-            
-            return count;
+        int count = 0;
+        
+        if (leftDepth == rightDepth) {
+            count = pow(2, leftDepth) - 1;
         } else {
-            return countNodes(root->right) + countNodes(root->left) + 1;
+            count = countNodes(root->left) + countNodes(root->right) + 1;
         }
+        
+        return count;
     }
     
 private:
@@ -33,25 +32,19 @@ private:
         if (!root)
             return 0;
         
-        int depth = 0;
-        while (root && root->left) {
-            depth++;
-            root = root->left;
-        }
+        if (!root->left)
+            return 1;
         
-        return depth;
+        return countLeftDepth(root->left) + 1;
     }
     
     int countRightDepth(TreeNode *root) {
         if (!root)
             return 0;
         
-        int depth = 0;
-        while (root && root->right) {
-            depth++;
-            root = root->right;
-        }
+        if (!root->right)
+            return 1;
         
-        return depth;
+        return countRightDepth(root->right) + 1;
     }
 };

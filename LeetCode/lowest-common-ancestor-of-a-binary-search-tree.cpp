@@ -24,7 +24,7 @@ public:
         if (foundP && foundQ) {
             int i = 0;
             while (i < pathP.size() && i < pathQ.size()) {
-                if (pathP[i]->val != pathQ[i]->val) {
+                if (pathP[i] != pathQ[i]) {
                     break;
                 } else {
                     lca = pathP[i];
@@ -43,9 +43,11 @@ private:
             
         path.push_back(root);
         
-        if (root->val != p->val) {
-            bool found = findPath(root->left, p, path);
-            if (!found) {
+        if (root != p) {
+            bool found = false;
+            if (p->val < root->val) {
+                found = findPath(root->left, p, path);
+            } else {
                 found = findPath(root->right, p, path);
             }
             

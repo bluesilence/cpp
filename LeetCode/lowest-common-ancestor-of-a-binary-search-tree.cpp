@@ -13,50 +13,21 @@ public:
         if (!root || !p || !q)
             return NULL;
         
-        vector<TreeNode*> pathP;
-        vector<TreeNode*> pathQ;
-        
-        bool foundP = findPath(root, p, pathP);
-        bool foundQ = findPath(root, q, pathQ);
-        
-        TreeNode* lca = NULL;
-        
-        if (foundP && foundQ) {
-            int i = 0;
-            while (i < pathP.size() && i < pathQ.size()) {
-                if (pathP[i] != pathQ[i]) {
-                    break;
-                } else {
-                    lca = pathP[i];
-                    i++;
-                }
-            }
+        if (p == q)
+            return p;
+            
+        //Ensures that p is on the left of q in InOrderTraversal
+        if (p->val > q->val) {
+            return lowestCommonAncestor(root, q, p);
         }
         
-        return lca;
-    }
-
-private:
-    bool findPath(TreeNode* root, TreeNode* p, vector<TreeNode*> &path) {
-        if (!root)
-            return false;
-            
-        path.push_back(root);
-        
-        if (root != p) {
-            bool found = false;
-            if (p->val < root->val) {
-                found = findPath(root->left, p, path);
-            } else {
-                found = findPath(root->right, p, path);
-            }
-            
-            if (!found) {
-                path.pop_back();
-                return false;
-            }
+        if (p->val < root->val && q->val < root->val) {
+            return lowestCommonAncestor(root->left, p, q);
+        } else if (p->val > root->val && q->val > root->val) {
+            return lowestCommonAncestor(root->right, p, q);
         }
         
-        return true;
+        //p and q are on different branches of root
+        return root;
     }
 };

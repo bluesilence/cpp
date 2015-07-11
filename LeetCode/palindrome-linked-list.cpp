@@ -13,47 +13,51 @@ public:
         if (!head || !head->next)
             return true;
         
-        ListNode* p = head;
+        ListNode* slow = head;
+        ListNode* fast = head;
         
-        //Use a stack to store the first half
-        stack<ListNode*> s;
-        
-        //Count the number of nodes
-        int len = getLen(head);
-        int half = len / 2;
-        for (int i = 0; i < half; i++) {
-            s.push(p);
-            p = p->next;
+        //Locate the center of the list
+        while (fast && fast->next && fast->next->next) {
+            fast = fast->next->next;
+            slow = slow->next;
         }
         
-        //If the number is odd, skip the node (center) after the slow pointer before starting comparison
-        if (len & 0x01 == 1) {
-            p = p->next;
-        }
+        //Reverse list after slow
+        reverseList(slow);
         
-        //Scan the second half, and compare with the top of the stack
-        //If not match, return false
-        while (p && !s.empty()) {
-            if (p->val != s.top()->val) {
+        ListNode* secondHalf = slow->next;
+        ListNode* firstHalf = head;
+        while (secondHalf) {
+            if (secondHalf->val != firstHalf->val) {
+                //Restore original list
+                reverseList(slow);
+                
                 return false;
             }
             
-            s.pop();
-            p = p->next;
+            secondHalf = secondHalf->next;
+            firstHalf = firstHalf->next;
         }
         
-        //If all the nodes in the stack are matched, return true
-        return !p && s.empty();
+        //Restore original list
+        reverseList(slow);
+        
+        return true;
     }
 
 private:
-    int getLen(ListNode* head) {
-        int len = 0;
-        while (head) {
-            len++;
-            head = head->next;
+    void reverseList(ListNode *preHead) {
+        ListNode* curr = preHead->next;
+        ListNode* pre = NULL;
+        ListNode* post = NULL;
+        
+        while (curr) {
+            post = curr->next;
+            curr->next = pre;
+            pre = curr;
+            curr = post;
         }
         
-        return len;
+        preHead->next = pre;
     }
 };

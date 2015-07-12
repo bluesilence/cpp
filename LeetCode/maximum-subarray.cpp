@@ -1,25 +1,16 @@
 class Solution {
 public:
     int maxSubArray(vector<int>& nums) {
-        int globalMax = 0;
-        int tempMax = 0;
-        
-        for (int i = 0; i < nums.size(); i++) {
-            tempMax += nums[i];
+        const int N = nums.size();
+        if (N < 1)
+            return 0;
             
-            if (tempMax < 0) {
-                tempMax = 0;
-            } else if (tempMax > globalMax) {
-                globalMax = tempMax;
-            }
-        }
-        
-        if (globalMax == 0) {   //All the elements are negative
-            globalMax = nums[0];
-            for (int i = 1; i < nums.size(); i++) {
-                if (nums[i] > globalMax)
-                    globalMax = nums[i];
-            }
+        int globalMax = nums[0];
+        int localMax = max(nums[0], 0);
+        for (int i = 1; i < N; i++) {
+            localMax += nums[i];    //Make sure when all nums are negative, globalMax won't be assigned to be 0
+            globalMax = max(globalMax, localMax);
+            localMax = max(localMax, 0);
         }
         
         return globalMax;

@@ -12,22 +12,16 @@ public:
         if (!head || !head->next)
             return head;
         
-        ListNode *dummyHead = new ListNode(0);
+        ListNode* pre = NULL;
+        ListNode* curr = head;
+        ListNode* post = NULL;
         
-        dummyHead->next = head;
-        ListNode *pre, *p, *post;
-        pre = dummyHead;
-        p = head;
-        
-        while (p) {
-            post = p->next;
-            p->next = pre;
-            pre = p;
-            p = post;
+        while (curr) {
+            post = curr->next;
+            curr->next = pre;
+            pre = curr;
+            curr = post;
         }
-        
-        head->next = NULL;
-        delete dummyHead;
         
         return pre;
     }

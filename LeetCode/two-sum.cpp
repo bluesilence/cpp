@@ -2,28 +2,35 @@ class Solution {
 public:
     vector<int> twoSum(vector<int>& nums, int target) {
         vector<int> results;
-        if (nums.size() < 2)
+        const int N = nums.size();
+        
+        if (N < 2) {
             return results;
-        
-        vector<int> numsCopy = nums;
-        sort(numsCopy.begin(), numsCopy.end());
-        
-        int i = 0, j = numsCopy.size() - 1;
-        int tmpSum;
-        while (i < j) {
-            tmpSum = numsCopy[i] + numsCopy[j];
-            if (tmpSum == target)
-                break;
-            else if (tmpSum < target)
-                i++;
-            else
-                j--;
         }
         
-        if (tmpSum == target) {
-            for (int k = 0; k < nums.size(); k++) {
-                if (nums[k] == numsCopy[i] || nums[k] == numsCopy[j])
-                    results.push_back(k+1);
+        vector<int> copy = nums;
+        sort(copy.begin(), copy.end());
+        
+        int begin = 0;
+        int end = N - 1;
+        
+        while (begin < end) {
+            long long sum = copy[begin] + copy[end];    //Watch out for overflows
+            
+            if (sum < target) {
+                begin++;
+            } else if (sum > target) {
+                end--;
+            } else {
+                break;
+            }
+        }
+        
+        if (begin < end) {  //Found 1 pair
+            for (int i = 0; i < N; i++) {
+                if (nums[i] == copy[begin] || nums[i] == copy[end]) {
+                    results.push_back(i + 1);
+                }
             }
         }
         

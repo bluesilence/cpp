@@ -1,20 +1,30 @@
 class Solution {
 public:
-    void rotate(int nums[], int n, int k) {
-        if (n < 2 || k % n == 0)
+    void rotate(vector<int>& nums, int k) {
+        const int N = nums.size();
+        if (N < 2)
             return;
-            
-        int *numsDup = new int[n * 2];
-        for (int i = 0; i < 2*n; i++) {
-            numsDup[i] = nums[i%n];
-        }
         
-        k = k % n;
-        int offset = n - k;
-        for (int i = 0; i < n; i++) {
-            nums[i] = numsDup[i + offset];
-        }
+        int moves = k % N;
+        if (moves == 0)
+            return;
         
-        delete numsDup;
+        reverse(nums, N - 1 - moves + 1, N - 1);
+        reverse(nums, 0, N - moves - 1);
+        reverse(nums, 0, N - 1);
+    }
+    
+private:
+    void reverse(vector<int>& nums, int begin, int end) {
+        if (begin < 0 || end >= nums.size())
+            return;
+        
+        while (begin < end) {
+            int tmp = nums[begin];
+            nums[begin] = nums[end];
+            nums[end] = tmp;
+            begin++;
+            end--;
+        }
     }
 };

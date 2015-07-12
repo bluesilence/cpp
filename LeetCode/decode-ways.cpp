@@ -2,8 +2,6 @@ class Solution {
 public:
     int numDecodings(string s) {
         //Define dp[N], dp[i] == the ways of decoding substring[0...i].
-        //dp[0] = 1
-        //dp[1] = dp[0] + (s[1] == '0' ? 0 : 1) + (isValid(substring[0...1]) ? 1 : 0)
         const int N = s.size();
         if (N == 0 || s[0] == '0')  //If the beginning is 0, there is no way to decode s
             return 0;

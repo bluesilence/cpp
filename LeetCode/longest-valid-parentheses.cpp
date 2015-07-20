@@ -1,49 +1,39 @@
 class Solution {
 public:
     int longestValidParentheses(string s) {
-        if (s.size() < 2)
+        if (s.empty())
             return 0;
         
-        //Store unmatched left parentheses
-        stack<int> leftParens;
-        //Store if the substring ended at i can form valid pair
-        vector<bool> canFormPair(s.size(), false);
+        const int N = s.size();
+        vector<bool> canFormPair(N - 1, false);
+        stack<int> leftParenIndexStack;
         
-        for (int i = 0; i < s.size(); i++) {
+        for (int i = 0; i < N; i++) {
             if (s[i] == '(') {
-                leftParens.push(i);
+                leftParenIndexStack.push(i);
             } else {
-                if (!leftParens.empty()) {
+                if (!leftParenIndexStack.empty()) {
                     canFormPair[i] = true;
-                    canFormPair[leftParens.top()] = true;
-                    leftParens.pop();
+                    canFormPair[leftParenIndexStack.top()] = true;
+                    leftParenIndexStack.pop();
                 }
             }
         }
         
-        int maxLen = 0;
-        int len = 0;    //The length of continuous canFormPair[i] == true
+        int localMax = 0;
+        int globalMax = 0;
         
-        for (int i = 0; i < s.size(); i++) {
-            if (canFormPair[i]) {
-                len++;
+        for (int i = 0; i <= N; i++) {
+            if (i < N && canFormPair[i]) {
+                localMax++;
                 continue;
             }
             
-            //canFormPair[i] == false
-            if (len > maxLen) {
-                maxLen = len;
-            }
+            globalMax = max(globalMax, localMax);
             
-            //Prepare for next valid substring
-            len = 0;
+            localMax = 0;   //Start next continuous valid parentheses substring
         }
         
-        //All the elements in canFormPair are true
-        if (len > maxLen) {
-            maxLen = len;
-        }
-        
-		return maxLen;
+        return globalMax;
     }
 };

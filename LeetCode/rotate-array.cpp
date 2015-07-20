@@ -1,22 +1,23 @@
 class Solution {
 public:
     void rotate(vector<int>& nums, int k) {
+        if (nums.size() < 2 || k < 1)
+            return;
+        
         const int N = nums.size();
-        if (N < 2)
+        int cleanK = k % N;
+
+        if (cleanK == 0)
             return;
         
-        int moves = k % N;
-        if (moves == 0)
-            return;
-        
-        reverse(nums, N - 1 - moves + 1, N - 1);
-        reverse(nums, 0, N - moves - 1);
+        reverse(nums, 0, N - cleanK - 1);
+        reverse(nums, N - cleanK, N - 1);
         reverse(nums, 0, N - 1);
     }
-    
+
 private:
     void reverse(vector<int>& nums, int begin, int end) {
-        if (begin < 0 || end >= nums.size())
+        if (begin < 0 || end >= nums.size() || begin >= end)
             return;
         
         while (begin < end) {

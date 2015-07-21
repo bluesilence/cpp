@@ -13,20 +13,32 @@ public:
         if (!root)
             return true;
         
-        if (root->left && !isValidBST(root->left))
-            return false;
+        stack<TreeNode*> s;
+        TreeNode* p = root;
+        TreeNode* pre = NULL;
         
-        if (pre != NULL && pre->val >= root->val)
-            return false;
+        while (p || !s.empty()) {
+            while (p) {
+                s.push(p);
+                p = p->left;
+            }
+            
+            if (!s.empty()) {
+                p = s.top();
+                s.pop();
+                
+                if (pre != NULL) {
+                    if (pre->val >= p->val) {
+                        return false;
+                    }
+                }
+                
+                pre = p;
+                
+                p = p->right;
+            }
+        }
         
-        pre = root;
-        
-        if (root->right)
-            return isValidBST(root->right);
-        else
-            return true;
+        return true;
     }
-
-private:
-    TreeNode *pre;
 };

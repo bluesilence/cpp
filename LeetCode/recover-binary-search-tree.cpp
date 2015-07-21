@@ -10,48 +10,57 @@
 class Solution {
 public:
     void recoverTree(TreeNode* root) {
-        if (!root)
+        if (!root || !root->left && !root->right)
             return;
         
-        TreeNode *pre = NULL;
-        TreeNode *firstWrongNode = NULL;
-        TreeNode *secondWrongNode = NULL;
-        TreeNode *postFirstWrongNode = NULL;
+        TreeNode* p = root;
+        TreeNode* pre = NULL;
+        TreeNode* firstMistake = NULL;
+        TreeNode* secondMistake = NULL;
+        TreeNode* firstMistakeSuccessor = NULL;
         
-        findWrongNodes(root, pre, firstWrongNode, secondWrongNode, postFirstWrongNode);
+        stack<TreeNode*> s;
         
-        if (!secondWrongNode) {
-            swap(firstWrongNode, postFirstWrongNode);
+        while (p || !s.empty()) {
+            while (p) {
+                s.push(p);
+                p = p->left;
+            }
+            
+            if (!s.empty()) {
+                p = s.top();
+                s.pop();
+                if (pre != NULL) {
+                    if (pre->val > p->val) {
+                        //Why? For the firstMistake, the correct value is swapped with some value greater than it
+                        //So the violation happens when checking the node with its successor, and then pre is the firstMistake node
+                        //For the second mistake, its value has been swapped to be smaller, so the secondMistake node is p, not pre
+                        if (!firstMistake) {
+                            firstMistake = pre;
+                            firstMistakeSuccessor = p;
+                        } else {    //Assume there are at most 2 violations in the tree
+                            secondMistake = p;
+                        }
+                    }
+                }
+                
+                pre = p;
+                p = p->right;
+            }
+        }
+        
+        if (!secondMistake) {
+            swap(firstMistake, firstMistakeSuccessor);
         } else {
-            swap(firstWrongNode, secondWrongNode);
+            swap(firstMistake, secondMistake);
         }
     }
 
 private:
-    void findWrongNodes(TreeNode *root, TreeNode *&pre, TreeNode *&firstWrongNode, TreeNode *&secondWrongNode, TreeNode *&postFirstWrongNode) {
-        if (!root)
+    void swap(TreeNode* p1, TreeNode* p2) {
+        if (!p1 || !p2)
             return;
         
-        if (root->left)
-            findWrongNodes(root->left, pre, firstWrongNode, secondWrongNode, postFirstWrongNode);
-        
-        if (pre != NULL && pre->val > root->val)    {//Found wrong node since it caused descending order
-            if (!firstWrongNode) {
-                firstWrongNode = pre;
-                //Why don't assign it to "secondWrongNode"?
-                //Because we don't know if there is a second wrong node(descending order) besides this pair of disordered nodes.
-                postFirstWrongNode = root;
-            } else {
-                secondWrongNode = root;
-            }
-        }
-        
-        pre = root; //Update pre before traversing root's right child
-        
-        if (root->right)
-            findWrongNodes(root->right, pre, firstWrongNode, secondWrongNode, postFirstWrongNode);
-    }
-    void swap(TreeNode *p1, TreeNode *p2) {
         int tmp = p1->val;
         p1->val = p2->val;
         p2->val = tmp;

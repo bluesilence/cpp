@@ -10,31 +10,17 @@
 class Solution {
 public:
     bool isBalanced(TreeNode* root) {
-        int height = 0;
+        if (!root)
+            return true;
         
-        return isBalancedCore(root, height);
+        return isBalanced(root->left) && isBalanced(root->right) && abs(getHeight(root->left) - getHeight(root->right)) <= 1;
     }
 
 private:
-    bool isBalancedCore(TreeNode *root, int &height) {
-        if (!root) {
-            height = 0;
-            return true;
-        }
+    int getHeight(TreeNode* p) {
+        if (!p)
+            return 0;
         
-        int leftHeight = 0;
-        bool leftIsBalanced = isBalancedCore(root->left, leftHeight);
-        
-        if (!leftIsBalanced)
-            return false;
-            
-        int rightHeight = 0;
-        bool rightIsBalanced = isBalancedCore(root->right, rightHeight);
-        
-        int heightDiff = leftHeight - rightHeight;
-        
-        height = max(leftHeight, rightHeight) + 1;
-        
-        return rightIsBalanced && (heightDiff >= -1 && heightDiff <= 1);
+        return max(getHeight(p->left), getHeight(p->right)) + 1;
     }
 };

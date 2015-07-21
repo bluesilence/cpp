@@ -9,8 +9,8 @@
  */
 class BSTIterator {
 public:
-    BSTIterator(TreeNode *root) {
-        pushLeft(root);
+    BSTIterator(TreeNode* root) {
+        pushLeftNodes(root);
     }
 
     /** @return whether we have a next smallest number */
@@ -20,26 +20,25 @@ public:
 
     /** @return the next smallest number */
     int next() {
-        TreeNode *tmp = s.top();
+        TreeNode* p = s.top();
         s.pop();
         
-        //Push the right subtree of tmp. These numbers are greater than tmp->val, but smaller than s.top()->val.
-        pushLeft(tmp->right);
+        //The nodes on the right subtree of p are greater than p, but less than current s.top()
+        pushLeftNodes(p->right);
         
-        return tmp->val;
+        return p->val;
     }
 
 private:
     stack<TreeNode*> s;
     
-    //The top of stack is always the next smallest number
-    void pushLeft(TreeNode* root) {
-        if (!root)
+    void pushLeftNodes(TreeNode* p) {
+        if (!p)
             return;
         
-        while (root) {
-            s.push(root);
-            root = root->left;
+        while (p) {
+            s.push(p);
+            p = p->left;
         }
     }
 };

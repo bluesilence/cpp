@@ -10,35 +10,29 @@
 class Solution {
 public:
     void flatten(TreeNode* root) {
-        //Flatten the tree using pre-order traversal
-        if (!root || !root->left && !root->right)
+        if (!root)
             return;
         
-        flattenCore(root);
-    }
-
-private:
-    TreeNode *flattenCore(TreeNode *root) {
-        if (!root)
-            return NULL;
+        //Use iterative pre-order traversal doesn't work, because the right pointer will be modified when flattening the tree
+        //Use recursive way instead. Since it's pre-order, the flattened node will still be previous node
+        flatten(root->left);
+        flatten(root->right);
         
-        if (!root->left && !root->right)
-            return root;
-        
-        TreeNode *pLeft = root->left;
-        TreeNode *pRight = root->right;
+        TreeNode* leftHead = root->left;
+        TreeNode* rightHead = root->right;
         
         root->left = NULL;
+        root->right = leftHead;
         
-        root->right = flattenCore(pLeft);
+        if (leftHead) { //Attach right list after left list
+            TreeNode* leftTail = leftHead;
+            while (leftTail->right) {
+                leftTail = leftTail->right;
+            }
         
-        TreeNode *p = root;
-        while (p && p->right) {
-            p = p->right;
+            leftTail->right = rightHead;
+        } else {    //Attach right list after root
+            root->right = rightHead;
         }
-        
-        p->right = flattenCore(pRight);
-        
-        return root;
     }
 };

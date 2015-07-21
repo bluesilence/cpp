@@ -10,36 +10,37 @@
 class Solution {
 public:
     vector<vector<int>> pathSum(TreeNode* root, int sum) {
-        vector<vector<int>> results;
+        vector<vector<int>> paths;
         
         if (!root)
-            return results;
+            return paths;
         
-        vector<int> result;
-        pathSumCore(results, result, root, sum);
+        vector<int> path;
+        
+        findPath(paths, path, root, sum);
+        
+        return paths;
     }
 
 private:
-    void pathSumCore(vector<vector<int>> &results, vector<int> &result, TreeNode *root, int sum) {
-        if (!root)
+    void findPath(vector<vector<int>>& paths, vector<int>& path, TreeNode* p, int sum) {
+        if (!p)
             return;
         
-        result.push_back(root->val);
+        sum -= p->val;
+        path.push_back(p->val);
         
-        if (!root->left && !root->right) {
-            if (root->val == sum) {
-                results.push_back(result);
-            }
+        if (sum == 0 && !p->left && !p->right) {
+            paths.push_back(path);
         } else {
-            if (root->left) {
-                pathSumCore(results, result, root->left, sum - root->val);
-            }
+            if (p->left)
+                findPath(paths, path, p->left, sum);
             
-            if (root->right) {
-                pathSumCore(results, result, root->right, sum - root->val);
-            }
+            if (p->right)
+                findPath(paths, path, p->right, sum);
         }
         
-        result.pop_back();
+        path.pop_back();
+        sum += p->val;
     }
 };

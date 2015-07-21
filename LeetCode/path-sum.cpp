@@ -14,7 +14,8 @@ public:
             return false;
         
         sum -= root->val;
-        if (!root->left && !root->right && sum == 0)
+        
+        if (sum == 0 && !root->left && !root->right)    //Only succeed at leaf node
             return true;
             
         return hasPathSum(root->left, sum) || hasPathSum(root->right, sum);

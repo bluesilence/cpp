@@ -9,45 +9,36 @@
 class Solution {
 public:
     ListNode* reverseKGroup(ListNode* head, int k) {
-        //Cut list into k-group
-        //Reverse each sublist recursively
-        //Stitch sublist back
-        if (k < 2)
+        if (!head || !head->next || k < 2)
             return head;
         
-        ListNode *dummyHead = new ListNode(0);
+        ListNode* dummyHead = new ListNode(0);
         dummyHead->next = head;
         
-        ListNode *p = dummyHead;
-        ListNode *q;
-        ListNode *begin;
-        ListNode *end;
+        ListNode* slow = dummyHead;
+        ListNode* fast = head;
         
-        while (p && p->next && p->next->next) {
-            begin = p->next;
-            end = begin;
-            
-            for (int i = 1; i < k; i++) {
-                if (end && end->next) {
-                    end = end->next;
+        while (fast) {
+            int i = 1;
+            while (i < k) {
+                if (fast->next) {
+                    fast = fast->next;
+                    i++;
                 } else {
                     break;
                 }
             }
             
-            q = end->next;
-            end->next = NULL;   //Cut the k nodes off the list
-            
-            int len = getLen(begin);
-            if (k > len) {  //Not enough nodes, do not reverse
+            if (i == k) {
+                //After reverse, slow->next is the tail of this k group
+                ListNode* groupEnd = slow->next;
+                reverse(slow, fast);
+                //After reverse, fast is the head of the list
+                slow = groupEnd;
+                fast = groupEnd->next;
+            } else {    //No k nodes to reverse
                 break;
             }
-            
-            reverseList(&begin, &end);
-            
-            p->next = begin;
-            end->next = q;
-            p = end;    //pre to next k-group
         }
         
         head = dummyHead->next;
@@ -57,48 +48,20 @@ public:
         return head;
     }
 
-    void reverseList(ListNode **begin, ListNode **end) {
-        ListNode *head = *begin;
-        ListNode *tail = *end;
-        
-        if (head == tail)
-            return;
-        
-        ListNode *dummyHead = new ListNode(0);
-        dummyHead->next = head;
-        
-        ListNode *pre = dummyHead;
-        ListNode *cur = head;
-        ListNode *next;
-        
-        while (cur && cur->next) {
-            next = cur->next;
-            
-            cur->next = pre;
-            
-            pre = cur;
-            cur = next;
-        }
-        
-        cur->next = pre;    //Last node
-        
-        *end = *begin;
-        (*end)->next = NULL;
-        
-        *begin = cur;
-        
-        delete dummyHead;
-    }
-
 private:
-    int getLen(ListNode *head) {
-        int len = 0;
-        ListNode *p = head;
-        while (p) {
-            len++;
-            p = p->next;
+    void reverse(ListNode* preBegin, ListNode* end) {
+        ListNode* pre = end->next;
+        ListNode* p = preBegin->next;
+        ListNode* post = NULL;
+        ListNode* postEnd = end->next;
+        
+        while (p && p != postEnd) {
+            post = p->next;
+            p->next = pre;
+            pre = p;
+            p = post;
         }
         
-        return len;
+        preBegin->next = pre;   //Stitch back to prior list
     }
 };

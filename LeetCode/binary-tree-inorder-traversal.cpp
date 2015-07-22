@@ -15,22 +15,28 @@ public:
         if (!root)
             return results;
         
-        stack<TreeNode*> s;
-        TreeNode *tmp = root;
+        TreeNode* p = root;
+        TreeNode* pre = NULL;
         
-        while (!s.empty() || tmp) {
-            while (tmp) {
-                s.push(tmp);
-                tmp = tmp->left;
-            }
-            
-            if (!s.empty()) {
-                tmp = s.top();
-                s.pop();
+        //Iterative, non-stack way: Put parent node at the end of its left subtree, traverse left subtree, then visit parent
+        while (p) {
+            if (p->left) {
+                pre = p->left;
+                while (pre->right && pre->right != p) {
+                    pre = pre->right;
+                }
                 
-                results.push_back(tmp->val);
-                
-                tmp = tmp->right;
+                if (!pre->right) {
+                    pre->right = p; //Link p to the end of its left subtree
+                    p = p->left;
+                } else {    //All left nodes of p have been visited, the next node circles back to p
+                    results.push_back(p->val);
+                    pre->right = NULL;  //Revert the change
+                    p = p->right;
+                }
+            } else {
+                results.push_back(p->val);
+                p = p->right;
             }
         }
         

@@ -16,64 +16,46 @@ public:
             return l1;
         
         int carry = 0;
-        ListNode *dummyHead = new ListNode(0);
-        ListNode *p = dummyHead;
+        int digit = 0;
         
-        while (l1 && l2) {
-            int sum = l1->val + l2->val + carry;
-            if (sum >= 10) {
-                carry = sum / 10;
-                sum %= 10;
-            } else {
-                carry = 0;
+        ListNode* p1 = l1;
+        ListNode* p2 = l2;
+        
+        ListNode* dummyHead = new ListNode(0);
+        ListNode* p = dummyHead;
+        
+        while (p1 || p2) {
+            int sum = carry;
+            if (p1) {
+                sum += p1->val;
+                p1 = p1->next;
             }
             
-            ListNode *node = new ListNode(sum);
-            p->next = node;
-            p = node;
-            
-            l1 = l1->next;
-            l2 = l2->next;
-        }
-        
-        while (l1) {
-            int sum = l1->val + carry;
-            if (sum >= 10) {
-                carry = sum / 10;
-                sum %= 10;
-            } else {
-                carry = 0;
+            if (p2) {
+                sum += p2->val;
+                p2 = p2->next;
             }
             
-            ListNode *node = new ListNode(sum);
-            p->next = node;
-            p = node;
-            l1 = l1->next;
-        }
-        
-        while (l2) {
-            int sum = l2->val + carry;
-            if (sum >= 10) {
-                carry = sum / 10;
-                sum %= 10;
-            } else {
-                carry = 0;
-            }
+            carry = sum / 10;
+            digit = sum - carry * 10;
             
-            ListNode *node = new ListNode(sum);
+            ListNode* node = new ListNode(digit);
+            
             p->next = node;
             p = node;
-            l2 = l2->next;
         }
         
         if (carry > 0) {
-            ListNode *node = new ListNode(carry);
+            ListNode* node = new ListNode(carry);
+            
             p->next = node;
+            p = node;
         }
         
-        ListNode *head = dummyHead->next;
+        p = dummyHead->next;
+        
         delete dummyHead;
         
-        return head;
+        return p;
     }
 };

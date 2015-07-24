@@ -1,39 +1,51 @@
 class Solution {
 public:
     int maxPoints(vector<Point> &points) {
-        if (points.size() == 0)
-            return 0;
-            
-        unordered_map<double, int> count;
-        int size = points.size();
-        int ans = 0;
+        unordered_map<double, int> countPerLine;
         
-        for (int i = 0; i < size; i++) {
-            count.clear();
-            int x = points[i].x;
-            int y = points[i].y;
+        const int N = points.size();
+        
+        if (N < 2)
+            return N;
+            
+        int x1 = 0;
+        int y1 = 0;
+        int x2 = 0;
+        int y2 = 0;
+        
+        int count = 0;
+        for (int i = 0; i + 1 < N; i++) {
+            x1 = points[i].x;
+            y1 = points[i].y;
+            
             int dups = 0;
             
-            for(int j = i+1; j < size; j++) {
-                int x1 = points[j].x;
-                int y1 = points[j].y;
-                if(x == x1 && y == y1) {
+            //Reset counter map
+            countPerLine.clear();
+            
+            for (int j = i + 1; j < N; j++) {
+                x2 = points[j].x;
+                y2 = points[j].y;
+                
+                if (x1 == x2 && y1 == y2) {
                     dups++;
-                } else if (x == x1) {   //Vertical line
-                    count[(double)INT_MAX]++;
+                } else if (x1 == x2) {  //Vertical line, slope is infinite
+                    countPerLine[(double)INT_MAX]++;
                 } else {
-                    double k = (double)(y1-y) / (double)(x1-x); //Note: convert int to double
-                    count[k]++;
+                    double slope = (double)(y2 - y1) / (double)(x2 - x1);
+                    countPerLine[slope]++;
                 }
             }
             
-            for (auto it = count.begin(); it != count.end(); it++){
-                ans = max(ans, it->second + dups);
+            for (auto iter = countPerLine.begin(); iter != countPerLine.end(); iter++) {
+                count = max(count, iter->second + dups);
             }
             
-            ans = max(ans, dups);   //Only duplicate points
+            //There are only dups, so countPerLine is empty and the loop above won't be entered
+            count = max(count, dups);
         }
         
-        return ans + 1; //Add the original point that was enumerated in the outer loop
+        //Add the first point in the line
+        return ++count;
     }
 };

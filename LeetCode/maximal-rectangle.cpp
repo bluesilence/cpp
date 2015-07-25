@@ -4,55 +4,54 @@ public:
         if (matrix.empty() || matrix[0].empty())
             return 0;
         
-        const int height = matrix.size();
-        const int width = matrix[0].size();
+        const int H = matrix.size();
+        const int W = matrix[0].size();
         
-        vector<vector<int>> barHeights(height, vector<int>(width, 0));
+        //leftBegin[i] stands for the leftmost index for the consecutive '1's before i (including i)
+        vector<int> leftBegin(W, 0);
+        
+        //rightEnd[i] stands for the rightmost index for the consecutive '1's after i (including i)
+        vector<int> rightEnd(W, W - 1);
+        
+        //height[i] stands for the max height of consecutive '1's above i (including i)
+        vector<int> height(W, 0);
+        
         int maxArea = 0;
         
-        for (int row = 0; row < height; row++) {
-            for (int col = 0; col < width; col++) {
-                barHeights[row][col] = matrix[row][col] - '0';
-                if (row > 0 && barHeights[row][col] == 1) { //Can form a bar with previous rows
-                    barHeights[row][col] += barHeights[row-1][col];
+        for (int i = 0; i < H; i++) {
+            //Narrow down the 
+            int currentLeft = 0;
+            int currentRight = W - 1;
+            
+            for (int j = 0; j < W; j++) {
+                if (matrix[i][j] == '1') {
+                    height[j]++;
+                } else {
+                    height[j] = 0;
                 }
             }
             
-            maxArea = max(maxArea, calculateMaxArea(barHeights[row]));
-        }
-        
-        return maxArea;
-    }
-    
-private:
-    int calculateMaxArea(vector<int> &heights) {
-        int maxArea = 0;
-        
-        stack<int> indices;
-        
-        for (int i = 0; i < heights.size(); i++) {
-            if (indices.empty() || heights[i] >= heights[indices.top()]) { //Continue ascending sequence
-                indices.push(i);
-            } else {
-                //Pop previous indices until it can form ascending sequence with heights[i]
-                while (!indices.empty() && heights[indices.top()] > heights[i]) {
-                    int j = indices.top();
-                    indices.pop();
-                    int width = indices.empty() ? i : i - indices.top() - 1;
-                    maxArea = max(maxArea, width * heights[j]);
+            for (int j = 0; j < W; j++) {
+                if (matrix[i][j] == '1') {
+                    leftBegin[j] = max(leftBegin[j], currentLeft);
+                } else {    //If matrix[i][j] == '0', the leftBegin should be minimum so as to not affect the range of '1's
+                    leftBegin[j] = 0;
+                    currentLeft = j + 1;
                 }
-
-		indices.push(i);	//Form a new ascending sequence with heights[i]
             }
-        }
-        
-        //For the last ascending sequence
-        int i = heights.size();
-        while (!indices.empty()) {
-            int j = indices.top();
-            indices.pop();
-            int width = indices.empty() ? i : i - indices.top() - 1;
-            maxArea = max(maxArea, width * heights[j]);
+            
+            for (int j = W - 1; j >= 0; j--) {
+                if (matrix[i][j] == '1') {
+                    rightEnd[j] = min(rightEnd[j], currentRight);
+                } else {    //If matrix[i][j] == '0', the rightEnd should be maximum so as to not affect the range of '1's
+                    rightEnd[j] = W - 1;
+                    currentRight = j - 1;
+                }
+            }
+            
+            for (int j = 0; j < W; j++) {
+                maxArea = max(maxArea, (rightEnd[j] - leftBegin[j] + 1) * height[j]);
+            }
         }
         
         return maxArea;

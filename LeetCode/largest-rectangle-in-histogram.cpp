@@ -1,35 +1,26 @@
 class Solution {
 public:
     int largestRectangleArea(vector<int>& height) {
-        if (height.empty())
-            return 0;
-        
-        //sentinal
-        height.push_back(0);
+        const int N = height.size();
         
         int maxArea = 0;
-        int tmpArea = 0;
+        stack<int> ascendingHistogramIndices;
+        height.push_back(0);    //sentinel
         
-        stack<int> beginIndices;
-        
-        for (int i = 0; i <= height.size(); i++) {
-            if (beginIndices.empty() || height[i] >= height[beginIndices.top()]) {
-                beginIndices.push(i);
-            } else {
-                while (!beginIndices.empty() && height[i] < height[beginIndices.top()]) {   //Otherwise, beginIndices.top() and i can form another ascending sequence
-                    int beginIndex = beginIndices.top();
-                    beginIndices.pop();
-                    int w = beginIndices.empty() ? i : (i - beginIndices.top() - 1);
+        for (int i = 0; i <= N; i++) {
+            if (i > 0) {
+                while (!ascendingHistogramIndices.empty() && height[i] < height[ascendingHistogramIndices.top()]) {
+                    int lastHistogramIndex = ascendingHistogramIndices.top();
+                    ascendingHistogramIndices.pop();
                     
-                    tmpArea = w * height[beginIndex];
-                    maxArea = max(maxArea, tmpArea);
+                    maxArea = max(maxArea, height[lastHistogramIndex] * (ascendingHistogramIndices.empty() ? i : (i - ascendingHistogramIndices.top() - 1)));
                 }
-                
-                beginIndices.push(i);
+            }
+            
+            if (i < N) {
+                ascendingHistogramIndices.push(i);
             }
         }
-        
-        height.pop_back();
         
         return maxArea;
     }

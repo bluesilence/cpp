@@ -4,13 +4,18 @@ public:
         const int N = nums.size();
         if (N < 1)
             return 0;
+        
+        int globalMax = INT_MIN;
+        int localMax = 0;
+        
+        for (int i = 0; i < N; i++) {
+            if (localMax < 0) {
+                localMax = nums[i];
+            } else {
+                localMax += nums[i];
+            }
             
-        int globalMax = nums[0];
-        int localMax = max(nums[0], 0);
-        for (int i = 1; i < N; i++) {
-            localMax += nums[i];    //Make sure when all nums are negative, globalMax won't be assigned to be 0
             globalMax = max(globalMax, localMax);
-            localMax = max(localMax, 0);
         }
         
         return globalMax;

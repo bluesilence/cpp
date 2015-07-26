@@ -9,6 +9,7 @@ public:
         unordered_set<string> currentSteps;
         unordered_set<string> nextSteps;
         
+        //Set start as visited
         if (unvisited.find(start) != unvisited.end()) {
             unvisited.erase(start);
         }
@@ -19,32 +20,36 @@ public:
             nextSteps.clear();
             
             for (auto iter = currentSteps.begin(); iter != currentSteps.end(); iter++) {
-                string originalWord = *iter;
-                string adjWord = originalWord;
+                string adjWord = *iter;
             
                 for (int i = 0; i < adjWord.size(); i++) {
+                    char originalChar = adjWord[i];
+                    
                     for (char c = 'a'; c <= 'z'; c++) {
                         if (c != adjWord[i]) {
                             adjWord[i] = c;
                             
                             if (unvisited.find(adjWord) != unvisited.end()) {
                                 nextSteps.insert(adjWord);
-                                adjacents[originalWord].insert(adjWord);
+                                
+                                adjacents[*iter].insert(adjWord);
                             }
                         }
                     }
                     
-                    adjWord[i] = originalWord[i];   //revert the change
+                    adjWord[i] = originalChar;   //revert the change
                 }
             }
             
-            for (auto it = nextSteps.begin(); it != nextSteps.end(); it++) {
-                unvisited.erase(*it);
+            for (auto iter = nextSteps.begin(); iter != nextSteps.end(); iter++) {
+                unvisited.erase(*iter);
             }
             
             currentSteps = nextSteps;
         }
         
+        //Generate paths after generating all possible edges
+        //It is recursive way, so put it after the while loop
         genPaths(adjacents, start, end);
         
         return results;

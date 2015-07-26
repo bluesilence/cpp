@@ -1,5 +1,3 @@
-//Best solution:
-//https://leetcode.com/discuss/32361/o-1-unordered_map-list-splice
 class LRUCache{
 public:
     LRUCache(int capacity) {
@@ -7,34 +5,35 @@ public:
     }
     
     int get(int key) {
-        if (cache.find(key) != cache.end()) {
-            items.splice(items.begin(), items, cache[key]);
+        if (cacheMap.find(key) != cacheMap.end()) {
+            cacheHistory.splice(cacheHistory.begin(), cacheHistory, cacheMap[key]);
             
-            return cache[key]->second;
+            return cacheMap[key]->second;
         } else {
             return -1;
         }
     }
     
     void set(int key, int value) {
-        if (cache.find(key) == cache.end()) {
-            if (cache.size() == capacity) { //Delete least recent used key
-                cache.erase(items.back().first);
-                items.pop_back();
+        if (cacheMap.find(key) == cacheMap.end()) {
+            if (cacheHistory.size() == capacity) {
+                int oldestKey = cacheHistory.back().first;
+                cacheMap.erase(oldestKey);
+                cacheHistory.pop_back();
             }
-            
-            items.push_front(make_pair(key, value));
-            cache[key] = items.begin();
+        
+            cacheHistory.push_front(make_pair(key, value));
+            cacheMap[key] = cacheHistory.begin();
         } else {
-            cache[key]->second = value;
-            items.splice(items.begin(), items, cache[key]);
+            cacheMap[key]->second = value;
+            cacheHistory.splice(cacheHistory.begin(), cacheHistory, cacheMap[key]);
         }
     }
 
 private:
-    list<pair<int, int>> items;
+    unordered_map<int, list<pair<int, int>>::iterator> cacheMap;
     
-    unordered_map<int, list<pair<int, int>>::iterator> cache;
+    list<pair<int, int>> cacheHistory;
     
     int capacity;
 };

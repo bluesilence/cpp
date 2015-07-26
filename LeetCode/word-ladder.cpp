@@ -1,53 +1,58 @@
 class Solution {
 public:
     int ladderLength(string start, string end, unordered_set<string> &dict) {
-		if (start.size() == 0 || end.size() == 0 || start == end || start.length() != end.length())
-			return 0;
-			
-		unordered_set<string> currentSteps, nextSteps;    //All possible steps for current and next BFS layer
-		unordered_set<string> unvisited = dict;
-		
-		unvisited.insert(end);
-		
-		currentSteps.insert(start);
-		int len = 1;
-		while (currentSteps.find(end) == currentSteps.end() && !unvisited.empty()) {
-		    for (auto iter = currentSteps.begin(); iter != currentSteps.end(); iter++) {    //BFS
-		        string tmp = *iter;
-		        for (int i = 0; i < start.length(); i++) {
-		            char c = tmp[i];
-                    for (int j = 0; j < 26; j++) {
-                        if (tmp[i] == 'a' + j)
+        if (start == end || dict.empty())
+            return 0;
+        
+        unordered_set<string> currentLayer;
+        unordered_set<string> nextLayer;
+        unordered_set<string> unvisited = dict;
+        
+        currentLayer.insert(start);
+        unvisited.insert(end);
+        
+        int length = 1;
+        int minLength = INT_MAX;
+        
+        while (currentLayer.find(end) == currentLayer.end() && !unvisited.empty()) {
+            minLength = min(minLength, length);
+            
+            for (auto iter = currentLayer.begin(); iter != currentLayer.end(); iter++) {
+                string word = *iter;
+                
+                for (int j = 0; j < word.size(); j++) {
+                    char originalChar = word[j];
+                    for (int k = 0; k < 26; k++) {
+                        char ch = 'a' + k;
+                        if (ch == originalChar) {
                             continue;
+                        }
                         
-                        tmp[i] = 'a' + j;
-                        if (unvisited.find(tmp) != unvisited.end()) {
-                            nextSteps.insert(tmp);
+                        word[j] = ch;
+                        
+                        if (unvisited.find(word) != unvisited.end()) {
+                            nextLayer.insert(word);
+                            unvisited.erase(word);
                         }
                     }
                     
-                    tmp[i] = c; //Revert this character
-		        }
-		    }
-		    
-		    if (nextSteps.empty())
-		        break;
-		
-		    //Important: This erasion must be done after trying all possible words in the above loops
-		    //Otherwise, some possible paths might be incorrectly excluded
-		    for (auto iter = nextSteps.begin(); iter != nextSteps.end(); iter++) {
-		        unvisited.erase(*iter);
-		    }
-		    
-		    currentSteps = nextSteps;
-		    len++;
-		    
-		    nextSteps.clear();
-		}
-		
-		if (currentSteps.find(end) != currentSteps.end())
-		    return len;
-		else
-		    return 0;
+                    word[j] = originalChar;
+                }
+            }
+            
+            if (nextLayer.empty()) {
+                break;
+            }
+            
+            currentLayer = nextLayer;
+            nextLayer.clear();
+            
+            length++;
+        }
+        
+        if (currentLayer.find(end) != currentLayer.end())
+            return length;
+        else
+            return 0;
     }
 };

@@ -1,68 +1,67 @@
 class Solution {
 public:
     void solve(vector<vector<char>> &board) {
-        //For each 'O' in the edges of the board, the adjacent 'O's it could reach is the 'O's not surrounded by 'X's at last
-        if (board.empty())
+        if (board.empty() || board[0].empty())
             return;
         
-        height = board.size();
-        width = board[0].size();
+        const int H = board.size();
+        const int W = board[0].size();
         
-        if (height < 3 || width < 3)
+        if (H < 3 || W < 3)
             return;
         
-        //Clear last queue
-        while (!q.empty()) {
-            q.pop();
+        queue<int> q;
+        
+        for (int i = 0; i < H; i++) {
+            if (board[i][0] == 'O') {
+                floodFillMarkUnsurrounded(board, q, i, 0);
+            }
+            
+            if (board[i][W-1] == 'O') {
+                floodFillMarkUnsurrounded(board, q, i, W - 1);
+            }
         }
         
-        //Mark regions that are not surrounded starting from 'O's at the first/last row
-        for (int i = 0; i < width; i++) {
-            BFSCheckAndMarkSurroundedRegionStartedFrom(0, i, board);
-            BFSCheckAndMarkSurroundedRegionStartedFrom(height - 1, i, board);
+        for (int i = 0; i < W; i++) {
+            if (board[0][i] == 'O') {
+                floodFillMarkUnsurrounded(board, q, 0, i);
+            }
+            
+            if (board[H-1][i] == 'O') {
+                floodFillMarkUnsurrounded(board, q, H - 1, i);
+            }
         }
         
-        //Mark regions that are not surrounded starting from 'O's at the first/last column
-        for (int i = 0; i < height; i++) {
-            BFSCheckAndMarkSurroundedRegionStartedFrom(i, 0, board);
-            BFSCheckAndMarkSurroundedRegionStartedFrom(i, width - 1, board);
-        }
-        
-        //Flip all 'O's except those that are not surrounded
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
+        for (int i = 0; i < H; i++) {
+            for (int j = 0; j < W; j++) {
                 board[i][j] = board[i][j] == 'Z' ? 'O' : 'X';
             }
         }
     }
 
 private:
-    queue<int> q;
-    int height;
-    int width;
-    
-    //Mark surrounded region with 'Z'
-    void checkAndMark(int x, int y, vector<vector<char>> &board) {
-        if (x >= 0 && x < height && y >= 0 && y < width && board[x][y] == 'O') {
-            board[x][y] = 'Z';
-            q.push(x * width + y);
-        }    
+    void checkAndMark(vector<vector<char>>& board, queue<int>& q, int row, int col) {
+        if (row >= board.size() || row < 0 || col >= board[0].size() || col < 0 || board[row][col] != 'O')
+            return;
+            
+        board[row][col] = 'Z';
+        q.push(row * board[0].size() + col);
     }
     
-    void BFSCheckAndMarkSurroundedRegionStartedFrom(int xIndex, int yIndex, vector<vector<char>> &board) {
-        checkAndMark(xIndex, yIndex, board);
+    void floodFillMarkUnsurrounded(vector<vector<char>>& board, queue<int>& q, int startRow, int startCol) {
+        checkAndMark(board, q, startRow, startCol);
+        
         while (!q.empty()) {
-            int p = q.front();
+            int pos = q.front();
             q.pop();
             
-            int px = p / width;
-            int py = p % width;
+            int row = pos / board.size();
+            int col = pos - row * board[0].size();
             
-            //Check all 4 adjacent positions
-            checkAndMark(px - 1, py, board);
-            checkAndMark(px + 1, py, board);
-            checkAndMark(px, py - 1, board);
-            checkAndMark(px, py + 1, board);
+            checkAndMark(board, q, row - 1, col);
+            checkAndMark(board, q, row + 1, col);
+            checkAndMark(board, q, row, col - 1);
+            checkAndMark(board, q, row, col + 1);
         }
     }
 };

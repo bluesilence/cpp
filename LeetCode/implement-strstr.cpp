@@ -1,68 +1,59 @@
 class Solution {
 public:
-    //The best video to learn kmp: https://www.quora.com/What-is-the-best-resource-to-learn-KMP-Algorithm
     int strStr(string haystack, string needle) {
-        if (needle.empty()) {
+        if (needle.empty())
             return 0;
-        }
         
-        if (haystack.empty()) {
-            return -1;
-        }
+        const int SLEN = haystack.length();
+        const int PLEN = needle.length();
         
-        const int M = haystack.size();
-        const int N = needle.size();
-        
-        vector<int> next(N, -1);
-        
-        genNext(needle, N, next);
+        vector<int> pattern = findPattern(needle);
         
         int i = 0;
         int j = 0;
         
-        while (i < M && j < N) {
+        while (i < SLEN && j < PLEN) {
             if (haystack[i] == needle[j]) {
                 i++;
                 j++;
             } else {
-                if (j == 0) {
-                    i++;
+                if (j > 0) {
+                    j = pattern[j-1] + 1;
                 } else {
-                    while (j > 0 && needle[j] != haystack[i]) {
-                        j = next[j-1] + 1;
-                    }
+                    i++;
                 }
             }
         }
         
-        if (j == N)
-            return i - j;
-        else
+        if (j == PLEN) {
+            return i - PLEN;
+        } else {
             return -1;
+        }
     }
 
 private:
-    void genNext(string &needle, const int N, vector<int> &next) {
-        if (needle.empty())
-            return;
+    vector<int> findPattern(const string& needle) {
+        const int N = needle.size();
+        vector<int> pattern(N, -1);
         
-        next[0] = -1;
+        int i = 0;
+        int j = 1;
         
-        int i = 1;
-        int j = 0;
-        
-        while (i < N) {
+        while (j < N) {
             if (needle[i] == needle[j]) {
-                next[i++] = j++;
+                pattern[j] = i;
+                i++;
+                j++;
             } else {
-                if (j == 0) {
-                    next[i++] = -1;
+                if (i > 0) {
+                    i = pattern[i-1] + 1;
                 } else {
-                    while (j > 0 && needle[j] != needle[i]) {
-                        j = next[j-1] + 1;
-                    }
+                    j++;
                 }
             }
         }
+        
+        return pattern;
     }
 };
